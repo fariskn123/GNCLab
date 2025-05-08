@@ -1,14 +1,15 @@
 
 import { Line } from "@react-three/drei";
+import { Vector3 } from "three";
 
 // Define waypoint positions
-const waypoints = [
+export const waypoints = [
   [0, 1, 0],      // Start point (at drone's initial position)
   [3, 2, 3],      // Midpoint 1
   [0, 3, 5],      // Midpoint 2
   [-4, 2, 2],     // Midpoint 3
   [-2, 1, -2]     // End point
-];
+] as [number, number, number][];
 
 const Waypoints = () => {
   return (
@@ -26,7 +27,7 @@ const Waypoints = () => {
         }
 
         return (
-          <group key={index} position={position as [number, number, number]}>
+          <group key={index} position={position}>
             {/* Waypoint marker */}
             <mesh>
               <sphereGeometry args={[0.3, 16, 16]} />
