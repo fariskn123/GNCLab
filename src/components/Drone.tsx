@@ -1,9 +1,9 @@
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { Group } from "three";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
-import { defaultWaypoints } from "./Waypoints";
+import { waypoints } from "./Waypoints";
 import { DroneStatus } from "./DroneControls";
 
 interface DroneProps {
@@ -14,9 +14,6 @@ interface DroneProps {
 const Drone = ({ status, onStatusChange }: DroneProps) => {
   const droneRef = useRef<Group>(null);
   const bodyRef = useRef<THREE.Mesh>(null);
-  
-  // Get access to the waypoints
-  const waypointsRef = useRef<[number, number, number][]>([]);
   
   // Animation state
   const animationRef = useRef({
@@ -30,7 +27,7 @@ const Drone = ({ status, onStatusChange }: DroneProps) => {
   // Reset the drone position and animation state
   const resetDrone = () => {
     if (droneRef.current) {
-      const startPoint = defaultWaypoints[0];
+      const startPoint = waypoints[0];
       droneRef.current.position.set(startPoint[0], startPoint[1], startPoint[2]);
       
       // Reset animation state
@@ -42,34 +39,21 @@ const Drone = ({ status, onStatusChange }: DroneProps) => {
   
   // Initialize drone position
   useFrame((state, delta) => {
-    // Get the current scene waypoints from objects in the scene
-    const waypointsObject = state.scene.children.find(child => 
-      child.type === 'Group' && child.children.some(c => c.type === 'Line'));
-      
-    if (waypointsObject) {
-      const line = waypointsObject.children.find(child => child.type === 'Line');
-      if (line && (line as any).points) {
-        waypointsRef.current = (line as any).points.map((p: THREE.Vector3) => [p.x, p.y, p.z]);
-      }
-    }
-    
     // Initial positioning if needed
     if (status === "idle" && droneRef.current) {
-      if (waypointsRef.current.length > 0) {
-        const startPoint = waypointsRef.current[0];
-        droneRef.current.position.set(startPoint[0], startPoint[1], startPoint[2]);
-      } else {
-        const startPoint = defaultWaypoints[0];
-        droneRef.current.position.set(startPoint[0], startPoint[1], startPoint[2]);
+      const startPoint = waypoints[0];
+      if (droneRef.current.position.x !== startPoint[0] || 
+          droneRef.current.position.y !== startPoint[1] || 
+          droneRef.current.position.z !== startPoint[2]) {
+        resetDrone();
       }
     }
     
     // Only animate when flying
     if (status !== "idle" && status !== "complete") {
-      if (!droneRef.current || waypointsRef.current.length < 2) return;
+      if (!droneRef.current) return;
       
       const { time, duration, currentIndex, direction, isReversing } = animationRef.current;
-      const waypoints = waypointsRef.current;
       
       // Update time counter
       animationRef.current.time += delta;
@@ -85,8 +69,6 @@ const Drone = ({ status, onStatusChange }: DroneProps) => {
       // Get current and next waypoint positions
       const currentWaypoint = waypoints[currentIndex];
       const targetWaypoint = waypoints[targetIndex];
-      
-      if (!currentWaypoint || !targetWaypoint) return;
       
       // Interpolate between waypoints based on progress
       const newX = THREE.MathUtils.lerp(currentWaypoint[0], targetWaypoint[0], progress);

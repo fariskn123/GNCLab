@@ -4,33 +4,18 @@ import { Canvas } from "@react-three/fiber";
 import { OrbitControls, PerspectiveCamera, Environment, SoftShadows } from "@react-three/drei";
 import Drone from "./Drone";
 import Ground from "./Ground";
-import Waypoints, { defaultWaypoints } from "./Waypoints";
+import Waypoints from "./Waypoints";
 import DroneControls, { DroneStatus } from "./DroneControls";
 
 const DroneScene = () => {
   const [droneStatus, setDroneStatus] = useState<DroneStatus>("idle");
-  const [waypoints, setWaypoints] = useState<[number, number, number][]>(defaultWaypoints);
-  
-  const handleGroundClick = (position: [number, number, number]) => {
-    // Only allow adding waypoints when drone is idle or mission is complete
-    if (droneStatus !== "idle" && droneStatus !== "complete") return;
-    
-    setWaypoints(prev => [...prev, position]);
-  };
 
   const handleStartMission = () => {
-    if (waypoints.length >= 2) {
-      setDroneStatus("flying");
-    }
+    setDroneStatus("flying");
   };
 
   const handleReset = () => {
     setDroneStatus("idle");
-  };
-
-  const handleClearWaypoints = () => {
-    // Reset to just the starting point
-    setWaypoints(defaultWaypoints);
   };
 
   return (
@@ -61,11 +46,8 @@ const DroneScene = () => {
         
         {/* Scene Elements */}
         <Drone status={droneStatus} onStatusChange={setDroneStatus} />
-        <Ground 
-          onGroundClick={handleGroundClick} 
-          isInteractive={droneStatus === "idle" || droneStatus === "complete"} 
-        />
-        <Waypoints waypoints={waypoints} />
+        <Ground />
+        <Waypoints />
         
         {/* Environment */}
         <Environment preset="city" />
@@ -76,9 +58,7 @@ const DroneScene = () => {
       <DroneControls 
         onStart={handleStartMission} 
         onReset={handleReset}
-        onClearWaypoints={handleClearWaypoints}
         status={droneStatus}
-        waypointCount={waypoints.length}
       />
     </div>
   );
