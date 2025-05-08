@@ -1,13 +1,25 @@
 
+import { useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, PerspectiveCamera, Environment, SoftShadows } from "@react-three/drei";
 import Drone from "./Drone";
 import Ground from "./Ground";
 import Waypoints from "./Waypoints";
+import DroneControls, { DroneStatus } from "./DroneControls";
 
 const DroneScene = () => {
+  const [droneStatus, setDroneStatus] = useState<DroneStatus>("idle");
+
+  const handleStartMission = () => {
+    setDroneStatus("flying");
+  };
+
+  const handleReset = () => {
+    setDroneStatus("idle");
+  };
+
   return (
-    <div className="w-full h-screen bg-gray-900">
+    <div className="w-full h-screen bg-gray-900 relative">
       <Canvas shadows>
         {/* Camera */}
         <PerspectiveCamera makeDefault position={[5, 5, 5]} fov={50} />
@@ -33,7 +45,7 @@ const DroneScene = () => {
         />
         
         {/* Scene Elements */}
-        <Drone />
+        <Drone status={droneStatus} onStatusChange={setDroneStatus} />
         <Ground />
         <Waypoints />
         
@@ -41,6 +53,13 @@ const DroneScene = () => {
         <Environment preset="city" />
         <SoftShadows />
       </Canvas>
+
+      {/* Overlay UI Controls */}
+      <DroneControls 
+        onStart={handleStartMission} 
+        onReset={handleReset}
+        status={droneStatus}
+      />
     </div>
   );
 };
