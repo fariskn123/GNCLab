@@ -1,12 +1,15 @@
 
 import { Line } from "@react-three/drei";
 import { Vector3 } from "three";
+import { DroneStatus } from "./DroneControls";
 
 interface WaypointsProps {
   waypoints: [number, number, number][];
+  currentWaypointIndex?: number;
+  status?: DroneStatus;
 }
 
-const Waypoints = ({ waypoints }: WaypointsProps) => {
+const Waypoints = ({ waypoints, currentWaypointIndex = 0, status = "idle" }: WaypointsProps) => {
   // Safety check for empty waypoints
   if (!waypoints || waypoints.length === 0) {
     return null;
@@ -16,9 +19,16 @@ const Waypoints = ({ waypoints }: WaypointsProps) => {
     <group>
       {/* Render waypoints as spheres */}
       {waypoints.map((position, index) => {
-        // Determine color based on position in sequence
+        // Determine if waypoint is completed
+        const isCompleted = (status === "flying" && index < currentWaypointIndex) || 
+                           (status === "returning" && index > currentWaypointIndex) ||
+                           (status === "complete" && index !== 0);
+        
+        // Determine color based on position in sequence and completion status
         let color;
-        if (index === 0) {
+        if (isCompleted) {
+          color = "#888888"; // Grey color for completed waypoints
+        } else if (index === 0) {
           color = "#32CD32"; // Green for start
         } else if (index === waypoints.length - 1) {
           color = "#ea384c"; // Red for end
@@ -26,18 +36,22 @@ const Waypoints = ({ waypoints }: WaypointsProps) => {
           color = "#1EAEDB"; // Blue for midpoints
         }
 
+        // Determine opacity and scale based on completion
+        const opacity = isCompleted ? 0.5 : 1;
+        const scale = isCompleted ? 0.8 : 1;
+
         return (
           <group key={index} position={position}>
             {/* Waypoint marker */}
-            <mesh>
+            <mesh scale={scale}>
               <sphereGeometry args={[0.3, 16, 16]} />
-              <meshStandardMaterial color={color} />
+              <meshStandardMaterial color={color} transparent opacity={opacity} />
             </mesh>
             
             {/* Waypoint number label position indicator */}
-            <mesh position={[0, 0.6, 0]}>
+            <mesh position={[0, 0.6, 0]} scale={scale}>
               <boxGeometry args={[0.1, 0.5, 0.1]} />
-              <meshStandardMaterial color={color} />
+              <meshStandardMaterial color={color} transparent opacity={opacity} />
             </mesh>
           </group>
         );

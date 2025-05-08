@@ -16,10 +16,12 @@ const initialWaypoints: [number, number, number][] = [
 const DroneScene = () => {
   const [droneStatus, setDroneStatus] = useState<DroneStatus>("idle");
   const [waypoints, setWaypoints] = useState<[number, number, number][]>(initialWaypoints);
+  const [currentWaypointIndex, setCurrentWaypointIndex] = useState<number>(0);
 
   const handleStartMission = () => {
     if (waypoints.length >= 2) {
       setDroneStatus("flying");
+      setCurrentWaypointIndex(0);
     } else {
       console.warn("Need at least 2 waypoints to start mission");
       // In a real app, you might want to show a user-facing message here
@@ -28,6 +30,7 @@ const DroneScene = () => {
 
   const handleReset = () => {
     setDroneStatus("idle");
+    setCurrentWaypointIndex(0);
   };
 
   const handleAddWaypoint = (coordinates: [number, number, number]) => {
@@ -37,6 +40,7 @@ const DroneScene = () => {
   const handleClearWaypoints = () => {
     setWaypoints(initialWaypoints); // Reset to initial waypoint
     setDroneStatus("idle");
+    setCurrentWaypointIndex(0);
   };
 
   const isEditingDisabled = droneStatus !== "idle" && droneStatus !== "complete";
@@ -72,9 +76,15 @@ const DroneScene = () => {
           status={droneStatus} 
           onStatusChange={setDroneStatus} 
           waypoints={waypoints}
+          currentWaypointIndex={currentWaypointIndex}
+          setCurrentWaypointIndex={setCurrentWaypointIndex}
         />
         <Ground />
-        <Waypoints waypoints={waypoints} />
+        <Waypoints 
+          waypoints={waypoints} 
+          currentWaypointIndex={currentWaypointIndex}
+          status={droneStatus}
+        />
         
         {/* Environment */}
         <Environment preset="city" />
@@ -96,6 +106,8 @@ const DroneScene = () => {
         onStart={handleStartMission} 
         onReset={handleReset}
         status={droneStatus}
+        currentWaypointIndex={currentWaypointIndex}
+        totalWaypoints={waypoints.length}
       />
     </div>
   );

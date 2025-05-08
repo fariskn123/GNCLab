@@ -1,5 +1,5 @@
 
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import { Group } from "three";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
@@ -9,9 +9,17 @@ interface DroneProps {
   status: DroneStatus;
   onStatusChange: (status: DroneStatus) => void;
   waypoints: [number, number, number][];
+  currentWaypointIndex?: number;
+  setCurrentWaypointIndex?: (index: number) => void;
 }
 
-const Drone = ({ status, onStatusChange, waypoints }: DroneProps) => {
+const Drone = ({ 
+  status, 
+  onStatusChange, 
+  waypoints,
+  currentWaypointIndex = 0,
+  setCurrentWaypointIndex = () => {}
+}: DroneProps) => {
   const droneRef = useRef<Group>(null);
   const bodyRef = useRef<THREE.Mesh>(null);
   
@@ -24,6 +32,13 @@ const Drone = ({ status, onStatusChange, waypoints }: DroneProps) => {
     isReversing: false
   });
 
+  // Update animation state when status changes
+  useEffect(() => {
+    if (status === "idle") {
+      resetDrone();
+    }
+  }, [status]);
+
   // Reset the drone position and animation state
   const resetDrone = () => {
     if (droneRef.current && waypoints && waypoints.length > 0) {
@@ -34,6 +49,7 @@ const Drone = ({ status, onStatusChange, waypoints }: DroneProps) => {
       animationRef.current.time = 0;
       animationRef.current.currentIndex = 0;
       animationRef.current.isReversing = false;
+      setCurrentWaypointIndex(0);
     }
   };
   
@@ -55,7 +71,7 @@ const Drone = ({ status, onStatusChange, waypoints }: DroneProps) => {
     }
     
     // Only animate when flying
-    if (status !== "idle" && status !== "complete" && waypoints.length > 1) {
+    if ((status === "flying" || status === "returning") && waypoints.length > 1) {
       if (!droneRef.current) return;
       
       const { time, duration, currentIndex, direction, isReversing } = animationRef.current;
@@ -110,6 +126,7 @@ const Drone = ({ status, onStatusChange, waypoints }: DroneProps) => {
         
         // Update current index based on direction
         animationRef.current.currentIndex = targetIndex;
+        setCurrentWaypointIndex(targetIndex);
         
         // Check if we reached the end or start
         if (targetIndex === waypoints.length - 1 && !isReversing) {
