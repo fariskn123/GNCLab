@@ -4,18 +4,35 @@ import { Canvas } from "@react-three/fiber";
 import { OrbitControls, PerspectiveCamera, Environment, SoftShadows } from "@react-three/drei";
 import Drone from "./Drone";
 import Ground from "./Ground";
-import Waypoints from "./Waypoints";
+import Waypoints, { defaultWaypoints } from "./Waypoints";
 import DroneControls, { DroneStatus } from "./DroneControls";
 
 const DroneScene = () => {
   const [droneStatus, setDroneStatus] = useState<DroneStatus>("idle");
+  const [waypoints, setWaypoints] = useState<[number, number, number][]>(defaultWaypoints);
+  
+  const handleGroundClick = (position: [number, number, number]) => {
+    // Only allow adding waypoints when not flying
+    if (droneStatus === "idle" || droneStatus === "complete") {
+      setWaypoints([...waypoints, position]);
+    }
+  };
 
   const handleStartMission = () => {
-    setDroneStatus("flying");
+    if (waypoints.length >= 2) {
+      setDroneStatus("flying");
+    }
   };
 
   const handleReset = () => {
     setDroneStatus("idle");
+  };
+
+  const handleClearWaypoints = () => {
+    if (droneStatus === "idle" || droneStatus === "complete") {
+      setWaypoints([]);
+      setDroneStatus("idle");
+    }
   };
 
   return (
@@ -45,9 +62,12 @@ const DroneScene = () => {
         />
         
         {/* Scene Elements */}
-        <Drone status={droneStatus} onStatusChange={setDroneStatus} />
-        <Ground />
-        <Waypoints />
+        <Drone status={droneStatus} waypoints={waypoints} onStatusChange={setDroneStatus} />
+        <Ground 
+          onGroundClick={handleGroundClick} 
+          isInteractive={droneStatus === "idle" || droneStatus === "complete"} 
+        />
+        <Waypoints waypoints={waypoints} />
         
         {/* Environment */}
         <Environment preset="city" />
@@ -58,7 +78,9 @@ const DroneScene = () => {
       <DroneControls 
         onStart={handleStartMission} 
         onReset={handleReset}
+        onClearWaypoints={handleClearWaypoints}
         status={droneStatus}
+        waypointsCount={waypoints.length}
       />
     </div>
   );
