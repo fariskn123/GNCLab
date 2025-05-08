@@ -3,15 +3,15 @@ import { useRef, useState } from "react";
 import { Group } from "three";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
+import { waypoints } from "./Waypoints";
 import { DroneStatus } from "./DroneControls";
 
 interface DroneProps {
   status: DroneStatus;
-  waypoints: [number, number, number][];
   onStatusChange: (status: DroneStatus) => void;
 }
 
-const Drone = ({ status, waypoints = [], onStatusChange }: DroneProps) => {
+const Drone = ({ status, onStatusChange }: DroneProps) => {
   const droneRef = useRef<Group>(null);
   const bodyRef = useRef<THREE.Mesh>(null);
   
@@ -23,13 +23,10 @@ const Drone = ({ status, waypoints = [], onStatusChange }: DroneProps) => {
     direction: 1, // 1 for forward, -1 for backward
     isReversing: false
   });
-  
-  // Don't run animation if we don't have waypoints
-  const hasWaypoints = waypoints && waypoints.length >= 2;
 
   // Reset the drone position and animation state
   const resetDrone = () => {
-    if (droneRef.current && waypoints && waypoints.length > 0) {
+    if (droneRef.current) {
       const startPoint = waypoints[0];
       droneRef.current.position.set(startPoint[0], startPoint[1], startPoint[2]);
       
@@ -42,17 +39,8 @@ const Drone = ({ status, waypoints = [], onStatusChange }: DroneProps) => {
   
   // Initialize drone position
   useFrame((state, delta) => {
-    // Handle case when there are no waypoints
-    if (!hasWaypoints) {
-      if (droneRef.current) {
-        // Default position when there are no waypoints
-        droneRef.current.position.set(0, 1, 0);
-      }
-      return;
-    }
-
     // Initial positioning if needed
-    if (status === "idle" && droneRef.current && waypoints && waypoints.length > 0) {
+    if (status === "idle" && droneRef.current) {
       const startPoint = waypoints[0];
       if (droneRef.current.position.x !== startPoint[0] || 
           droneRef.current.position.y !== startPoint[1] || 
@@ -62,7 +50,7 @@ const Drone = ({ status, waypoints = [], onStatusChange }: DroneProps) => {
     }
     
     // Only animate when flying
-    if ((status === "flying" || status === "returning") && hasWaypoints) {
+    if (status !== "idle" && status !== "complete") {
       if (!droneRef.current) return;
       
       const { time, duration, currentIndex, direction, isReversing } = animationRef.current;

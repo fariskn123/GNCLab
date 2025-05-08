@@ -4,36 +4,18 @@ import { Canvas } from "@react-three/fiber";
 import { OrbitControls, PerspectiveCamera, Environment, SoftShadows } from "@react-three/drei";
 import Drone from "./Drone";
 import Ground from "./Ground";
-import Waypoints, { defaultWaypoints } from "./Waypoints";
+import Waypoints from "./Waypoints";
 import DroneControls, { DroneStatus } from "./DroneControls";
 
 const DroneScene = () => {
   const [droneStatus, setDroneStatus] = useState<DroneStatus>("idle");
-  // Ensure waypoints is initialized as an empty array
-  const [waypoints, setWaypoints] = useState<[number, number, number][]>(defaultWaypoints);
-  
-  const handleGroundClick = (position: [number, number, number]) => {
-    // Only allow adding waypoints when not flying
-    if (droneStatus === "idle" || droneStatus === "complete") {
-      setWaypoints([...(waypoints || []), position]);
-    }
-  };
 
   const handleStartMission = () => {
-    if (waypoints && waypoints.length >= 2) {
-      setDroneStatus("flying");
-    }
+    setDroneStatus("flying");
   };
 
   const handleReset = () => {
     setDroneStatus("idle");
-  };
-
-  const handleClearWaypoints = () => {
-    if (droneStatus === "idle" || droneStatus === "complete") {
-      setWaypoints([]);
-      setDroneStatus("idle");
-    }
   };
 
   return (
@@ -63,16 +45,9 @@ const DroneScene = () => {
         />
         
         {/* Scene Elements */}
-        <Drone 
-          status={droneStatus} 
-          waypoints={waypoints || []} 
-          onStatusChange={setDroneStatus} 
-        />
-        <Ground 
-          onGroundClick={handleGroundClick} 
-          isInteractive={droneStatus === "idle" || droneStatus === "complete"} 
-        />
-        <Waypoints waypoints={waypoints || []} />
+        <Drone status={droneStatus} onStatusChange={setDroneStatus} />
+        <Ground />
+        <Waypoints />
         
         {/* Environment */}
         <Environment preset="city" />
@@ -83,9 +58,7 @@ const DroneScene = () => {
       <DroneControls 
         onStart={handleStartMission} 
         onReset={handleReset}
-        onClearWaypoints={handleClearWaypoints}
         status={droneStatus}
-        waypointsCount={waypoints?.length || 0}
       />
     </div>
   );
