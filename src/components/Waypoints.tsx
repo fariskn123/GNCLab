@@ -10,8 +10,9 @@ interface WaypointsProps {
   waypoints: [number, number, number][];
 }
 
-const Waypoints = ({ waypoints }: WaypointsProps) => {
-  if (waypoints.length === 0) {
+const Waypoints = ({ waypoints = [] }: WaypointsProps) => {
+  // Safe check for empty or undefined waypoints
+  if (!waypoints || waypoints.length === 0) {
     return null;
   }
 

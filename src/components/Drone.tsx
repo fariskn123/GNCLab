@@ -11,7 +11,7 @@ interface DroneProps {
   onStatusChange: (status: DroneStatus) => void;
 }
 
-const Drone = ({ status, waypoints, onStatusChange }: DroneProps) => {
+const Drone = ({ status, waypoints = [], onStatusChange }: DroneProps) => {
   const droneRef = useRef<Group>(null);
   const bodyRef = useRef<THREE.Mesh>(null);
   
@@ -25,11 +25,11 @@ const Drone = ({ status, waypoints, onStatusChange }: DroneProps) => {
   });
   
   // Don't run animation if we don't have waypoints
-  const hasWaypoints = waypoints.length >= 2;
+  const hasWaypoints = waypoints && waypoints.length >= 2;
 
   // Reset the drone position and animation state
   const resetDrone = () => {
-    if (droneRef.current && waypoints.length > 0) {
+    if (droneRef.current && waypoints && waypoints.length > 0) {
       const startPoint = waypoints[0];
       droneRef.current.position.set(startPoint[0], startPoint[1], startPoint[2]);
       
@@ -52,7 +52,7 @@ const Drone = ({ status, waypoints, onStatusChange }: DroneProps) => {
     }
 
     // Initial positioning if needed
-    if (status === "idle" && droneRef.current) {
+    if (status === "idle" && droneRef.current && waypoints && waypoints.length > 0) {
       const startPoint = waypoints[0];
       if (droneRef.current.position.x !== startPoint[0] || 
           droneRef.current.position.y !== startPoint[1] || 

@@ -9,7 +9,7 @@ interface GroundProps {
 
 const Ground = ({ onGroundClick, isInteractive }: GroundProps) => {
   const handleGroundClick = (event: ThreeEvent<MouseEvent>) => {
-    if (!isInteractive) return;
+    if (!isInteractive || !onGroundClick) return;
     
     // Get the point where the user clicked on the ground plane
     const point = event.point;
