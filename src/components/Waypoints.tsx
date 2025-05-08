@@ -2,16 +2,16 @@
 import { Line } from "@react-three/drei";
 import { Vector3 } from "three";
 
-// Define waypoint positions
-export const waypoints = [
-  [0, 1, 0],      // Start point (at drone's initial position)
-  [3, 2, 3],      // Midpoint 1
-  [0, 3, 5],      // Midpoint 2
-  [-4, 2, 2],     // Midpoint 3
-  [-2, 1, -2]     // End point
-] as [number, number, number][];
+interface WaypointsProps {
+  waypoints: [number, number, number][];
+}
 
-const Waypoints = () => {
+const Waypoints = ({ waypoints }: WaypointsProps) => {
+  // Safety check for empty waypoints
+  if (!waypoints || waypoints.length === 0) {
+    return null;
+  }
+  
   return (
     <group>
       {/* Render waypoints as spheres */}
@@ -44,12 +44,14 @@ const Waypoints = () => {
       })}
       
       {/* Path line connecting waypoints */}
-      <Line
-        points={waypoints}
-        color="#33C3F0"
-        lineWidth={2}
-        dashed={false}
-      />
+      {waypoints.length > 1 && (
+        <Line
+          points={waypoints}
+          color="#33C3F0"
+          lineWidth={2}
+          dashed={false}
+        />
+      )}
     </group>
   );
 };

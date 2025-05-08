@@ -6,17 +6,40 @@ import Drone from "./Drone";
 import Ground from "./Ground";
 import Waypoints from "./Waypoints";
 import DroneControls, { DroneStatus } from "./DroneControls";
+import WaypointForm from "./WaypointForm";
+
+// Initial default waypoints
+const initialWaypoints: [number, number, number][] = [
+  [0, 1, 0]
+];
 
 const DroneScene = () => {
   const [droneStatus, setDroneStatus] = useState<DroneStatus>("idle");
+  const [waypoints, setWaypoints] = useState<[number, number, number][]>(initialWaypoints);
 
   const handleStartMission = () => {
-    setDroneStatus("flying");
+    if (waypoints.length >= 2) {
+      setDroneStatus("flying");
+    } else {
+      console.warn("Need at least 2 waypoints to start mission");
+      // In a real app, you might want to show a user-facing message here
+    }
   };
 
   const handleReset = () => {
     setDroneStatus("idle");
   };
+
+  const handleAddWaypoint = (coordinates: [number, number, number]) => {
+    setWaypoints([...waypoints, coordinates]);
+  };
+
+  const handleClearWaypoints = () => {
+    setWaypoints(initialWaypoints); // Reset to initial waypoint
+    setDroneStatus("idle");
+  };
+
+  const isEditingDisabled = droneStatus !== "idle" && droneStatus !== "complete";
 
   return (
     <div className="w-full h-screen bg-gray-900 relative">
@@ -45,16 +68,30 @@ const DroneScene = () => {
         />
         
         {/* Scene Elements */}
-        <Drone status={droneStatus} onStatusChange={setDroneStatus} />
+        <Drone 
+          status={droneStatus} 
+          onStatusChange={setDroneStatus} 
+          waypoints={waypoints}
+        />
         <Ground />
-        <Waypoints />
+        <Waypoints waypoints={waypoints} />
         
         {/* Environment */}
         <Environment preset="city" />
         <SoftShadows />
       </Canvas>
 
-      {/* Overlay UI Controls */}
+      {/* Waypoint Form - Positioned at the top */}
+      <div className="absolute top-6 left-6 max-w-md z-10">
+        <WaypointForm 
+          onAddWaypoint={handleAddWaypoint}
+          onClearWaypoints={handleClearWaypoints}
+          waypoints={waypoints}
+          disabled={isEditingDisabled}
+        />
+      </div>
+
+      {/* Overlay UI Controls - Positioned at the bottom */}
       <DroneControls 
         onStart={handleStartMission} 
         onReset={handleReset}

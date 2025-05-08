@@ -1,17 +1,17 @@
 
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { Group } from "three";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
-import { waypoints } from "./Waypoints";
 import { DroneStatus } from "./DroneControls";
 
 interface DroneProps {
   status: DroneStatus;
   onStatusChange: (status: DroneStatus) => void;
+  waypoints: [number, number, number][];
 }
 
-const Drone = ({ status, onStatusChange }: DroneProps) => {
+const Drone = ({ status, onStatusChange, waypoints }: DroneProps) => {
   const droneRef = useRef<Group>(null);
   const bodyRef = useRef<THREE.Mesh>(null);
   
@@ -26,7 +26,7 @@ const Drone = ({ status, onStatusChange }: DroneProps) => {
 
   // Reset the drone position and animation state
   const resetDrone = () => {
-    if (droneRef.current) {
+    if (droneRef.current && waypoints && waypoints.length > 0) {
       const startPoint = waypoints[0];
       droneRef.current.position.set(startPoint[0], startPoint[1], startPoint[2]);
       
@@ -39,6 +39,11 @@ const Drone = ({ status, onStatusChange }: DroneProps) => {
   
   // Initialize drone position
   useFrame((state, delta) => {
+    // Ensure we have waypoints to navigate
+    if (!waypoints || waypoints.length === 0) {
+      return;
+    }
+    
     // Initial positioning if needed
     if (status === "idle" && droneRef.current) {
       const startPoint = waypoints[0];
@@ -50,7 +55,7 @@ const Drone = ({ status, onStatusChange }: DroneProps) => {
     }
     
     // Only animate when flying
-    if (status !== "idle" && status !== "complete") {
+    if (status !== "idle" && status !== "complete" && waypoints.length > 1) {
       if (!droneRef.current) return;
       
       const { time, duration, currentIndex, direction, isReversing } = animationRef.current;
