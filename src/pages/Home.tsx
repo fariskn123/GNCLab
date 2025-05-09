@@ -21,18 +21,21 @@ const Home = () => {
           title="Construction Site Inspection"
           description="Perimeter survey of construction sites with obstacle detection"
           icon={<Construction className="h-8 w-8" />}
+          missionType="construction"
         />
         
         <MissionCard 
           title="Bridge Over Waterway Inspection"
           description="Structural integrity scan of bridge components"
           icon={<Factory className="h-8 w-8" />}
+          missionType="bridge"
         />
         
         <MissionCard 
           title="Warehouse Roof Scan"
           description="Grid pattern analysis for roof maintenance planning"
           icon={<Warehouse className="h-8 w-8" />}
+          missionType="warehouse"
         />
       </div>
     </div>
@@ -43,9 +46,10 @@ interface MissionCardProps {
   title: string;
   description: string;
   icon: React.ReactNode;
+  missionType: string;
 }
 
-const MissionCard = ({ title, description, icon }: MissionCardProps) => {
+const MissionCard = ({ title, description, icon, missionType }: MissionCardProps) => {
   return (
     <Card className="bg-[#1A1A1A] border-gray-800 hover:scale-[1.02] transition-transform duration-300 cursor-pointer">
       <CardHeader>
@@ -60,8 +64,10 @@ const MissionCard = ({ title, description, icon }: MissionCardProps) => {
         <CardDescription className="text-gray-400">{description}</CardDescription>
       </CardContent>
       <CardFooter>
-        <Button className="w-full bg-[#222] hover:bg-[#333] border border-gray-700">
-          Select Mission
+        <Button className="w-full bg-[#222] hover:bg-[#333] border border-gray-700" asChild>
+          <Link to={`/simulator?mission=${missionType}`}>
+            Select Mission
+          </Link>
         </Button>
       </CardFooter>
     </Card>
