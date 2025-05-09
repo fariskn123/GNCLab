@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, PerspectiveCamera, Environment, SoftShadows } from "@react-three/drei";
@@ -7,6 +6,17 @@ import Ground from "./Ground";
 import Waypoints from "./Waypoints";
 import DroneControls, { DroneStatus } from "./DroneControls";
 import WaypointForm from "./WaypointForm";
+import ConstructionSite from "./ConstructionSite";
+import { useSearchParams } from "react-router-dom";
+
+// Construction site mission preset waypoints
+const constructionMission: [number, number, number][] = [
+  [2, 2, 5],
+  [8, 2, 5],
+  [8, 8, 5],
+  [2, 8, 5],
+  [2, 2, 5]
+];
 
 // Initial default waypoints
 const initialWaypoints: [number, number, number][] = [
@@ -15,7 +25,12 @@ const initialWaypoints: [number, number, number][] = [
 
 const DroneScene = () => {
   const [droneStatus, setDroneStatus] = useState<DroneStatus>("idle");
-  const [waypoints, setWaypoints] = useState<[number, number, number][]>(initialWaypoints);
+  const [searchParams] = useSearchParams();
+  const missionType = searchParams.get('mission') || 'construction';
+  
+  // Use construction mission waypoints by default, or initialWaypoints for sandbox mode
+  const missionWaypoints = missionType === 'sandbox' ? initialWaypoints : constructionMission;
+  const [waypoints, setWaypoints] = useState<[number, number, number][]>(missionWaypoints);
   const [currentWaypointIndex, setCurrentWaypointIndex] = useState<number>(0);
 
   const handleStartMission = () => {
@@ -86,6 +101,9 @@ const DroneScene = () => {
           shadow-camera-top={10}
           shadow-camera-bottom={-10}
         />
+        
+        {/* Construction Site Elements */}
+        <ConstructionSite />
         
         {/* Scene Elements */}
         <Drone 
