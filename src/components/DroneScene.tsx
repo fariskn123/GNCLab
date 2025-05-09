@@ -1,5 +1,6 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, PerspectiveCamera, Environment, SoftShadows } from "@react-three/drei";
 import Drone from "./Drone";
@@ -7,6 +8,7 @@ import Ground from "./Ground";
 import Waypoints from "./Waypoints";
 import DroneControls, { DroneStatus } from "./DroneControls";
 import WaypointForm from "./WaypointForm";
+import { missionMap } from "../data/missions";
 
 // Initial default waypoints
 const initialWaypoints: [number, number, number][] = [
@@ -17,6 +19,23 @@ const DroneScene = () => {
   const [droneStatus, setDroneStatus] = useState<DroneStatus>("idle");
   const [waypoints, setWaypoints] = useState<[number, number, number][]>(initialWaypoints);
   const [currentWaypointIndex, setCurrentWaypointIndex] = useState<number>(0);
+  const [searchParams] = useSearchParams();
+
+  // Load mission waypoints based on URL parameter
+  useEffect(() => {
+    const missionType = searchParams.get('mission') || 'sandbox';
+    const missionWaypoints = missionMap[missionType];
+    
+    if (missionWaypoints) {
+      setWaypoints(missionWaypoints);
+    } else {
+      setWaypoints(initialWaypoints);
+    }
+    
+    // Reset drone state when loading new mission
+    setDroneStatus("idle");
+    setCurrentWaypointIndex(0);
+  }, [searchParams]);
 
   const handleStartMission = () => {
     if (waypoints.length >= 2) {
