@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, PerspectiveCamera, Environment, SoftShadows } from "@react-three/drei";
@@ -9,7 +8,7 @@ import DroneControls, { DroneStatus } from "./DroneControls";
 import WaypointForm from "./WaypointForm";
 import MissionObstacles from "./MissionObstacles";
 
-// Define mission-specific waypoints
+// Define mission-specific waypoints using proper tuple typing
 const missionWaypoints: Record<string, [number, number, number][]> = {
   sandbox: [
     [0, 1, 0]
@@ -81,9 +80,9 @@ const DroneScene = ({ missionType = "sandbox" }: DroneSceneProps) => {
 
   // Load mission waypoints on mount or mission type change
   useEffect(() => {
-    // Select waypoints based on mission type
+    // Select waypoints based on mission type - ensure they are properly typed
     const initialPoints = missionWaypoints[missionType] || missionWaypoints.sandbox;
-    setWaypoints(initialPoints);
+    setWaypoints([...initialPoints]); // Create a new array to ensure proper typing
     setDroneStatus("idle");
     setCurrentWaypointIndex(0);
   }, [missionType]);
@@ -109,7 +108,7 @@ const DroneScene = ({ missionType = "sandbox" }: DroneSceneProps) => {
 
   const handleClearWaypoints = () => {
     // Reset to initial waypoint for current mission
-    const initialPoint = missionWaypoints[missionType] ? [missionWaypoints[missionType][0]] : [[0, 1, 0]];
+    const initialPoint = missionWaypoints[missionType] ? [missionWaypoints[missionType][0]] : [[0, 1, 0] as [number, number, number]];
     setWaypoints(initialPoint);
     setDroneStatus("idle");
     setCurrentWaypointIndex(0);
