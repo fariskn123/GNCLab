@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, PerspectiveCamera, Environment, SoftShadows } from "@react-three/drei";
 import Drone from "./Drone";
@@ -6,86 +6,16 @@ import Ground from "./Ground";
 import Waypoints from "./Waypoints";
 import DroneControls, { DroneStatus } from "./DroneControls";
 import WaypointForm from "./WaypointForm";
-import MissionObstacles from "./MissionObstacles";
 
-// Define mission-specific waypoints using proper tuple typing
-const missionWaypoints: Record<string, [number, number, number][]> = {
-  sandbox: [
-    [0, 1, 0]
-  ],
-  construction: [
-    [0, 2, 0],  // Start point
-    [3, 5, 0],  // Front corner
-    [7, 5, 0],  // Front edge
-    [7, 5, 5],  // Front edge high
-    [7, 5, 0],  // Back down
-    [7, 5, -3], // Back edge
-    [3, 5, -3], // Back corner
-    [0, 2, 0]   // Return to start
-  ],
-  waterway: [
-    [0, 1, 5],   // Start point
-    [-5, 3, 0],  // Bridge approach
-    [-3, 2, 0],  // Over first support
-    [0, 2, 0],   // Middle of bridge 
-    [3, 2, 0],   // Over last support
-    [5, 3, 0],   // Bridge exit
-    [0, 0.5, 0], // Under bridge
-    [0, 1, 5]    // Return to start
-  ],
-  warehouse: [
-    [-8, 2, -8],   // Start point
-    [-5, 4, -5],   // First corner
-    [-5, 4, -3],   // First row
-    [-5, 4, -1],
-    [-5, 4, 1],
-    [-5, 4, 3],
-    [-5, 4, 5],    // End first row
-    [-3, 4, 5],    // Move over
-    [-3, 4, 3],    // Second row backward
-    [-3, 4, 1],
-    [-3, 4, -1],
-    [-3, 4, -3],
-    [-3, 4, -5],   // End second row
-    [-1, 4, -5],   // Move over
-    [-1, 4, -3],   // Third row forward
-    [-1, 4, -1],
-    [-1, 4, 1],
-    [-1, 4, 3],
-    [-1, 4, 5],    // End third row
-    [1, 4, 5],     // Move over
-    [1, 4, 3],     // Fourth row backward
-    [1, 4, 1],
-    [1, 4, -1],
-    [1, 4, -3],
-    [1, 4, -5],    // End fourth row
-    [3, 4, -5],    // Move over
-    [3, 4, -3],    // Fifth row forward
-    [3, 4, -1],
-    [3, 4, 1],
-    [3, 4, 3],
-    [3, 4, 5],     // End path
-    [-8, 2, -8]    // Return to start
-  ]
-};
+// Initial default waypoints
+const initialWaypoints: [number, number, number][] = [
+  [0, 1, 0]
+];
 
-interface DroneSceneProps {
-  missionType?: string;
-}
-
-const DroneScene = ({ missionType = "sandbox" }: DroneSceneProps) => {
+const DroneScene = () => {
   const [droneStatus, setDroneStatus] = useState<DroneStatus>("idle");
-  const [waypoints, setWaypoints] = useState<[number, number, number][]>([]);
+  const [waypoints, setWaypoints] = useState<[number, number, number][]>(initialWaypoints);
   const [currentWaypointIndex, setCurrentWaypointIndex] = useState<number>(0);
-
-  // Load mission waypoints on mount or mission type change
-  useEffect(() => {
-    // Select waypoints based on mission type - ensure they are properly typed
-    const initialPoints = missionWaypoints[missionType] || missionWaypoints.sandbox;
-    setWaypoints([...initialPoints]); // Create a new array to ensure proper typing
-    setDroneStatus("idle");
-    setCurrentWaypointIndex(0);
-  }, [missionType]);
 
   const handleStartMission = () => {
     if (waypoints.length >= 2) {
@@ -107,9 +37,7 @@ const DroneScene = ({ missionType = "sandbox" }: DroneSceneProps) => {
   };
 
   const handleClearWaypoints = () => {
-    // Reset to initial waypoint for current mission
-    const initialPoint = missionWaypoints[missionType] ? [missionWaypoints[missionType][0]] : [[0, 1, 0] as [number, number, number]];
-    setWaypoints(initialPoint);
+    setWaypoints(initialWaypoints); // Reset to initial waypoint
     setDroneStatus("idle");
     setCurrentWaypointIndex(0);
   };
@@ -179,7 +107,6 @@ const DroneScene = ({ missionType = "sandbox" }: DroneSceneProps) => {
           setCurrentWaypointIndex={setCurrentWaypointIndex}
         />
         <Ground />
-        <MissionObstacles missionType={missionType} />
         <Waypoints 
           waypoints={waypoints} 
           currentWaypointIndex={currentWaypointIndex}
