@@ -7,18 +7,7 @@ import DroneScene from "@/components/DroneScene";
 const Index = () => {
   // Get mission type from URL query parameters
   const [searchParams] = useSearchParams();
-  const missionType = searchParams.get('mission') || 'construction';
-  
-  // Determine mission name for display
-  const getMissionName = () => {
-    switch (missionType) {
-      case 'sandbox':
-        return 'Sandbox Mode';
-      case 'construction':
-      default:
-        return 'Construction Site Inspection';
-    }
-  };
+  const missionType = searchParams.get('mission') || 'sandbox';
   
   return (
     <div className="w-full h-screen overflow-hidden relative">
@@ -37,7 +26,7 @@ const Index = () => {
       {/* Mission indicator */}
       <div className="absolute top-4 right-4 z-10">
         <div className="px-3 py-1.5 bg-black/50 text-white rounded-md border border-gray-700">
-          Mission: {getMissionName()}
+          Mission: {missionType.charAt(0).toUpperCase() + missionType.slice(1)}
         </div>
       </div>
     </div>
