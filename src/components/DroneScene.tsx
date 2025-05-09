@@ -7,6 +7,7 @@ import Ground from "./Ground";
 import Waypoints from "./Waypoints";
 import DroneControls, { DroneStatus } from "./DroneControls";
 import WaypointForm from "./WaypointForm";
+import MissionObstacles from "./MissionObstacles";
 import { useMissionContext } from "@/context/MissionContext";
 
 const DroneScene = () => {
@@ -105,6 +106,7 @@ const DroneScene = () => {
           currentWaypointIndex={currentWaypointIndex}
           status={droneStatus}
         />
+        <MissionObstacles />
         
         {/* Environment */}
         <Environment preset="city" />
