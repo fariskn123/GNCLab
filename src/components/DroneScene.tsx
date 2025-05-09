@@ -8,10 +8,17 @@ import Waypoints from "./Waypoints";
 import DroneControls, { DroneStatus } from "./DroneControls";
 import WaypointForm from "./WaypointForm";
 
-// Initial default waypoints
-const initialWaypoints: [number, number, number][] = [
-  [0, 1, 0]
+// Construction site mission waypoints
+const constructionMission: [number, number, number][] = [
+  [2, 2, 5],
+  [8, 2, 5],
+  [8, 8, 5],
+  [2, 8, 5],
+  [2, 2, 5]
 ];
+
+// Initial default waypoints set to construction mission
+const initialWaypoints: [number, number, number][] = [...constructionMission];
 
 const DroneScene = () => {
   const [droneStatus, setDroneStatus] = useState<DroneStatus>("idle");
@@ -38,7 +45,7 @@ const DroneScene = () => {
   };
 
   const handleClearWaypoints = () => {
-    setWaypoints(initialWaypoints); // Reset to initial waypoint
+    setWaypoints(initialWaypoints); // Reset to initial waypoint (construction mission)
     setDroneStatus("idle");
     setCurrentWaypointIndex(0);
   };
@@ -87,6 +94,12 @@ const DroneScene = () => {
           shadow-camera-bottom={-10}
         />
         
+        {/* Construction Building */}
+        <mesh position={[5, 5, 2.5]} castShadow receiveShadow>
+          <boxGeometry args={[4, 4, 5]} />
+          <meshStandardMaterial color="#8E9196" transparent opacity={0.8} />
+        </mesh>
+        
         {/* Scene Elements */}
         <Drone 
           status={droneStatus} 
@@ -106,6 +119,13 @@ const DroneScene = () => {
         <Environment preset="city" />
         <SoftShadows />
       </Canvas>
+
+      {/* Mission Label - Positioned at the top */}
+      <div className="absolute top-24 left-6 max-w-md z-10">
+        <div className="px-3 py-2 bg-black/70 text-white rounded-md mb-2">
+          Mission: Construction Site Inspection (0-10 grid)
+        </div>
+      </div>
 
       {/* Waypoint Form - Positioned at the top */}
       <div className="absolute top-6 left-6 max-w-md z-10">
