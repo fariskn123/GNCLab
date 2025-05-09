@@ -1,31 +1,13 @@
 
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Home as HomeIcon } from "lucide-react";
 import DroneScene from "@/components/DroneScene";
-import { useMissionContext } from "@/context/MissionContext";
 
 const Index = () => {
-  const { selectedMission } = useMissionContext();
-  
-  // Determine the mission type from the selected waypoints
-  const getMissionType = () => {
-    // Simple detection based on first waypoint
-    const firstWaypoint = selectedMission[0];
-    if (!firstWaypoint) return "sandbox";
-    
-    if (firstWaypoint[0] === 5 && firstWaypoint[1] === 5 && firstWaypoint[2] === 15) {
-      return "construction";
-    } else if (firstWaypoint[0] === 5 && firstWaypoint[1] === 10 && firstWaypoint[2] === 5) {
-      return "bridge";
-    } else if (firstWaypoint[0] === 5 && firstWaypoint[1] === 5 && firstWaypoint[2] === 20) {
-      return "roof";
-    }
-    
-    return "sandbox";
-  };
-  
-  const missionType = getMissionType();
+  // Get mission type from URL query parameters
+  const [searchParams] = useSearchParams();
+  const missionType = searchParams.get('mission') || 'sandbox';
   
   return (
     <div className="w-full h-screen overflow-hidden relative">

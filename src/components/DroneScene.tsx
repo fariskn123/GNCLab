@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, PerspectiveCamera, Environment, SoftShadows } from "@react-three/drei";
 import Drone from "./Drone";
@@ -7,21 +7,16 @@ import Ground from "./Ground";
 import Waypoints from "./Waypoints";
 import DroneControls, { DroneStatus } from "./DroneControls";
 import WaypointForm from "./WaypointForm";
-import MissionObstacles from "./MissionObstacles";
-import { useMissionContext } from "@/context/MissionContext";
+
+// Initial default waypoints
+const initialWaypoints: [number, number, number][] = [
+  [0, 1, 0]
+];
 
 const DroneScene = () => {
-  const { selectedMission } = useMissionContext();
   const [droneStatus, setDroneStatus] = useState<DroneStatus>("idle");
-  const [waypoints, setWaypoints] = useState<[number, number, number][]>([]);
+  const [waypoints, setWaypoints] = useState<[number, number, number][]>(initialWaypoints);
   const [currentWaypointIndex, setCurrentWaypointIndex] = useState<number>(0);
-
-  // Load waypoints from context when component mounts
-  useEffect(() => {
-    setWaypoints(selectedMission);
-    setDroneStatus("idle");
-    setCurrentWaypointIndex(0);
-  }, [selectedMission]);
 
   const handleStartMission = () => {
     if (waypoints.length >= 2) {
@@ -43,7 +38,7 @@ const DroneScene = () => {
   };
 
   const handleClearWaypoints = () => {
-    setWaypoints([[0, 1, 0]]); // Reset to initial waypoint
+    setWaypoints(initialWaypoints); // Reset to initial waypoint
     setDroneStatus("idle");
     setCurrentWaypointIndex(0);
   };
@@ -106,7 +101,6 @@ const DroneScene = () => {
           currentWaypointIndex={currentWaypointIndex}
           status={droneStatus}
         />
-        <MissionObstacles />
         
         {/* Environment */}
         <Environment preset="city" />

@@ -1,22 +1,10 @@
 
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Construction, Factory, Warehouse, Edit3 } from "lucide-react";
-import { useMissionContext } from "@/context/MissionContext";
-import { missionMap } from "@/data/missions";
 
 const Home = () => {
-  const { setSelectedMission } = useMissionContext();
-  const navigate = useNavigate();
-
-  const handleMissionSelect = (missionType: string) => {
-    // Set the selected mission waypoints in context
-    setSelectedMission(missionMap[missionType]);
-    // Navigate to simulator
-    navigate("/simulator");
-  };
-
   return (
     <div className="min-h-screen bg-[#111111] flex flex-col items-center justify-center px-4 py-12">
       {/* Subtle background grid effect */}
@@ -34,7 +22,6 @@ const Home = () => {
           description="Perimeter survey of construction sites with obstacle detection"
           icon={<Construction className="h-8 w-8" />}
           missionType="construction"
-          onSelect={handleMissionSelect}
         />
         
         <MissionCard 
@@ -42,15 +29,13 @@ const Home = () => {
           description="Structural integrity scan of bridge components"
           icon={<Factory className="h-8 w-8" />}
           missionType="bridge"
-          onSelect={handleMissionSelect}
         />
         
         <MissionCard 
           title="Warehouse Roof Scan"
           description="Grid pattern analysis for roof maintenance planning"
           icon={<Warehouse className="h-8 w-8" />}
-          missionType="roof"
-          onSelect={handleMissionSelect}
+          missionType="warehouse"
         />
 
         <MissionCard 
@@ -58,7 +43,6 @@ const Home = () => {
           description="Create your own mission manually"
           icon={<Edit3 className="h-8 w-8" />}
           missionType="sandbox"
-          onSelect={handleMissionSelect}
         />
       </div>
     </div>
@@ -70,10 +54,9 @@ interface MissionCardProps {
   description: string;
   icon: React.ReactNode;
   missionType: string;
-  onSelect: (missionType: string) => void;
 }
 
-const MissionCard = ({ title, description, icon, missionType, onSelect }: MissionCardProps) => {
+const MissionCard = ({ title, description, icon, missionType }: MissionCardProps) => {
   return (
     <Card className="bg-[#1A1A1A] border-gray-800 hover:scale-[1.02] transition-transform duration-300 cursor-pointer">
       <CardHeader>
@@ -88,11 +71,10 @@ const MissionCard = ({ title, description, icon, missionType, onSelect }: Missio
         <CardDescription className="text-gray-400">{description}</CardDescription>
       </CardContent>
       <CardFooter>
-        <Button 
-          className="w-full bg-[#222] hover:bg-[#333] border border-gray-700"
-          onClick={() => onSelect(missionType)}
-        >
-          Select Mission
+        <Button className="w-full bg-[#222] hover:bg-[#333] border border-gray-700" asChild>
+          <Link to={`/simulator?mission=${missionType}`}>
+            Select Mission
+          </Link>
         </Button>
       </CardFooter>
     </Card>
