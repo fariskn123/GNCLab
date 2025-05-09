@@ -9,6 +9,16 @@ const Index = () => {
   const [searchParams] = useSearchParams();
   const missionType = searchParams.get('mission') || 'sandbox';
   
+  // Get formatted mission name for display
+  const getMissionName = () => {
+    switch(missionType) {
+      case 'construction':
+        return "Construction Site Inspection (0-10 grid)";
+      default:
+        return "Sandbox";
+    }
+  };
+  
   return (
     <div className="w-full h-screen overflow-hidden relative">
       <DroneScene />
@@ -26,7 +36,7 @@ const Index = () => {
       {/* Mission indicator */}
       <div className="absolute top-4 right-4 z-10">
         <div className="px-3 py-1.5 bg-black/50 text-white rounded-md border border-gray-700">
-          Mission: {missionType.charAt(0).toUpperCase() + missionType.slice(1)}
+          Mission: {getMissionName()}
         </div>
       </div>
     </div>
