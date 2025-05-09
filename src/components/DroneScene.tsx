@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, PerspectiveCamera, Environment, SoftShadows } from "@react-three/drei";
 import Drone from "./Drone";
@@ -7,42 +7,16 @@ import Ground from "./Ground";
 import Waypoints from "./Waypoints";
 import DroneControls, { DroneStatus } from "./DroneControls";
 import WaypointForm from "./WaypointForm";
-import MissionObstacles from "./MissionObstacles";
 
-// Initial default waypoints for sandbox mode
+// Initial default waypoints
 const initialWaypoints: [number, number, number][] = [
   [0, 1, 0]
 ];
 
-// Preset waypoints for the construction site inspection mission
-const constructionMissionWaypoints: [number, number, number][] = [
-  [2, 2, 5],
-  [8, 2, 5],
-  [8, 8, 5],
-  [2, 8, 5],
-  [2, 2, 5]
-];
-
-interface DroneSceneProps {
-  missionType?: string;
-}
-
-const DroneScene = ({ missionType = 'sandbox' }: DroneSceneProps) => {
+const DroneScene = () => {
   const [droneStatus, setDroneStatus] = useState<DroneStatus>("idle");
   const [waypoints, setWaypoints] = useState<[number, number, number][]>(initialWaypoints);
   const [currentWaypointIndex, setCurrentWaypointIndex] = useState<number>(0);
-
-  // Set up initial waypoints based on mission type
-  useEffect(() => {
-    if (missionType === 'construction') {
-      setWaypoints(constructionMissionWaypoints);
-    } else {
-      setWaypoints(initialWaypoints);
-    }
-    // Reset the drone status and current waypoint index when mission type changes
-    setDroneStatus("idle");
-    setCurrentWaypointIndex(0);
-  }, [missionType]);
 
   const handleStartMission = () => {
     if (waypoints.length >= 2) {
@@ -57,13 +31,6 @@ const DroneScene = ({ missionType = 'sandbox' }: DroneSceneProps) => {
   const handleReset = () => {
     setDroneStatus("idle");
     setCurrentWaypointIndex(0);
-    
-    // Reset to mission-specific initial waypoints or sandbox mode waypoint
-    if (missionType === 'construction') {
-      setWaypoints(constructionMissionWaypoints);
-    } else {
-      setWaypoints(initialWaypoints);
-    }
   };
 
   const handleAddWaypoint = (coordinates: [number, number, number]) => {
@@ -89,17 +56,6 @@ const DroneScene = ({ missionType = 'sandbox' }: DroneSceneProps) => {
 
     const updatedWaypoints = [...waypoints];
     updatedWaypoints.splice(index, 1);
-    setWaypoints(updatedWaypoints);
-  };
-
-  const handleEditWaypoint = (index: number, coordinates: [number, number, number]) => {
-    if (droneStatus !== "idle" && droneStatus !== "complete") {
-      console.warn("Cannot edit waypoints during mission");
-      return;
-    }
-
-    const updatedWaypoints = [...waypoints];
-    updatedWaypoints[index] = coordinates;
     setWaypoints(updatedWaypoints);
   };
 
@@ -146,9 +102,6 @@ const DroneScene = ({ missionType = 'sandbox' }: DroneSceneProps) => {
           status={droneStatus}
         />
         
-        {/* Mission-specific obstacles */}
-        <MissionObstacles missionType={missionType} />
-        
         {/* Environment */}
         <Environment preset="city" />
         <SoftShadows />
@@ -160,7 +113,6 @@ const DroneScene = ({ missionType = 'sandbox' }: DroneSceneProps) => {
           onAddWaypoint={handleAddWaypoint}
           onClearWaypoints={handleClearWaypoints}
           onRemoveWaypoint={handleRemoveWaypoint}
-          onEditWaypoint={handleEditWaypoint}
           waypoints={waypoints}
           disabled={isEditingDisabled}
         />

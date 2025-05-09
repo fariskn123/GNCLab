@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Plus, Trash2, X, Edit, Save, XCircle } from "lucide-react";
+import { Plus, Trash2, X } from "lucide-react";
 
 type WaypointCoordinates = [number, number, number];
 
@@ -11,7 +11,6 @@ interface WaypointFormProps {
   onAddWaypoint: (coordinates: WaypointCoordinates) => void;
   onClearWaypoints: () => void;
   onRemoveWaypoint?: (index: number) => void;
-  onEditWaypoint?: (index: number, coordinates: WaypointCoordinates) => void;
   waypoints: WaypointCoordinates[];
   disabled: boolean;
 }
@@ -20,17 +19,12 @@ const WaypointForm: React.FC<WaypointFormProps> = ({
   onAddWaypoint,
   onClearWaypoints,
   onRemoveWaypoint,
-  onEditWaypoint,
   waypoints,
   disabled,
 }) => {
   const [x, setX] = useState<string>("0");
   const [y, setY] = useState<string>("1");
   const [z, setZ] = useState<string>("0");
-  const [editingIndex, setEditingIndex] = useState<number | null>(null);
-  const [editX, setEditX] = useState<string>("0");
-  const [editY, setEditY] = useState<string>("0");
-  const [editZ, setEditZ] = useState<string>("0");
 
   const handleAddWaypoint = () => {
     const coordinates: WaypointCoordinates = [
@@ -43,30 +37,6 @@ const WaypointForm: React.FC<WaypointFormProps> = ({
     setX("0");
     setY("1");
     setZ("0");
-  };
-
-  const handleStartEdit = (index: number) => {
-    const waypoint = waypoints[index];
-    setEditX(waypoint[0].toString());
-    setEditY(waypoint[1].toString());
-    setEditZ(waypoint[2].toString());
-    setEditingIndex(index);
-  };
-
-  const handleSaveEdit = () => {
-    if (editingIndex !== null && onEditWaypoint) {
-      const updatedCoordinates: WaypointCoordinates = [
-        parseFloat(editX) || 0,
-        parseFloat(editY) || 0,
-        parseFloat(editZ) || 0,
-      ];
-      onEditWaypoint(editingIndex, updatedCoordinates);
-      setEditingIndex(null);
-    }
-  };
-
-  const handleCancelEdit = () => {
-    setEditingIndex(null);
   };
 
   return (
@@ -129,10 +99,10 @@ const WaypointForm: React.FC<WaypointFormProps> = ({
         </Button>
       </div>
       
-      {/* Note about modifying waypoints */}
+      {/* Note about removing waypoints */}
       {waypoints.length > 1 && !disabled && (
         <p className="text-xs text-gray-400 mb-3 italic">
-          Edit or remove waypoints before starting mission.
+          Remove waypoints before starting mission.
         </p>
       )}
       
@@ -144,96 +114,27 @@ const WaypointForm: React.FC<WaypointFormProps> = ({
         ) : (
           <ul className="space-y-1">
             {waypoints.map((waypoint, index) => (
-              <li key={index} className="text-sm bg-gray-800/50 px-2 py-1 rounded">
-                {editingIndex === index ? (
-                  <div className="flex flex-col space-y-2">
-                    <div className="grid grid-cols-3 gap-2">
-                      <div>
-                        <Label htmlFor={`edit-x-${index}`} className="text-xs text-gray-300">X:</Label>
-                        <Input
-                          id={`edit-x-${index}`}
-                          type="number"
-                          value={editX}
-                          onChange={(e) => setEditX(e.target.value)}
-                          className="h-7 text-xs bg-gray-700 border-gray-600"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor={`edit-y-${index}`} className="text-xs text-gray-300">Y:</Label>
-                        <Input
-                          id={`edit-y-${index}`}
-                          type="number"
-                          value={editY}
-                          onChange={(e) => setEditY(e.target.value)}
-                          className="h-7 text-xs bg-gray-700 border-gray-600"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor={`edit-z-${index}`} className="text-xs text-gray-300">Z:</Label>
-                        <Input
-                          id={`edit-z-${index}`}
-                          type="number"
-                          value={editZ}
-                          onChange={(e) => setEditZ(e.target.value)}
-                          className="h-7 text-xs bg-gray-700 border-gray-600"
-                        />
-                      </div>
-                    </div>
-                    <div className="flex justify-end space-x-2">
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="h-6 w-6 p-0"
-                        onClick={handleCancelEdit}
-                      >
-                        <XCircle size={14} />
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="h-6 w-6 p-0 text-green-400 hover:text-green-500"
-                        onClick={handleSaveEdit}
-                      >
-                        <Save size={14} />
-                      </Button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      <span className={`w-3 h-3 rounded-full inline-block mr-2 ${
-                        index === 0 ? "bg-green-500" : 
-                        index === waypoints.length - 1 ? "bg-red-500" : 
-                        "bg-blue-500"
-                      }`}></span>
-                      <span className="font-medium">{index === 0 ? "Start" : index === waypoints.length - 1 ? "End" : `Waypoint ${index}`}:</span>
-                      <span className="ml-1">X={waypoint[0]}, Y={waypoint[1]}, Z={waypoint[2]}</span>
-                    </div>
-                    
-                    {/* Edit and Remove buttons */}
-                    {!disabled && (
-                      <div className="flex">
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          className="h-6 w-6 p-0" 
-                          onClick={() => handleStartEdit(index)}
-                        >
-                          <Edit size={14} />
-                        </Button>
-                        {onRemoveWaypoint && (
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            className="h-6 w-6 p-0" 
-                            onClick={() => onRemoveWaypoint(index)}
-                          >
-                            <X size={14} />
-                          </Button>
-                        )}
-                      </div>
-                    )}
-                  </div>
+              <li key={index} className="text-sm flex items-center justify-between bg-gray-800/50 px-2 py-1 rounded">
+                <div className="flex items-center">
+                  <span className={`w-3 h-3 rounded-full inline-block mr-2 ${
+                    index === 0 ? "bg-green-500" : 
+                    index === waypoints.length - 1 ? "bg-red-500" : 
+                    "bg-blue-500"
+                  }`}></span>
+                  <span className="font-medium">{index === 0 ? "Start" : index === waypoints.length - 1 ? "End" : `Waypoint ${index}`}:</span>
+                  <span className="ml-1">X={waypoint[0]}, Y={waypoint[1]}, Z={waypoint[2]}</span>
+                </div>
+                
+                {/* Remove waypoint button */}
+                {onRemoveWaypoint && !disabled && (
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="h-6 w-6 p-0" 
+                    onClick={() => onRemoveWaypoint(index)}
+                  >
+                    <X size={14} />
+                  </Button>
                 )}
               </li>
             ))}
