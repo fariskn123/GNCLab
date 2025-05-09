@@ -2,7 +2,7 @@
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Construction, Factory, Warehouse } from "lucide-react";
+import { Construction, Factory, Warehouse, Edit3 } from "lucide-react";
 
 const Home = () => {
   return (
@@ -16,7 +16,7 @@ const Home = () => {
         <div className="mt-6 w-20 h-px bg-gray-700 mx-auto"></div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 max-w-6xl w-full z-10">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 max-w-6xl w-full z-10">
         <MissionCard 
           title="Construction Site Inspection"
           description="Perimeter survey of construction sites with obstacle detection"
@@ -36,6 +36,13 @@ const Home = () => {
           description="Grid pattern analysis for roof maintenance planning"
           icon={<Warehouse className="h-8 w-8" />}
           missionType="warehouse"
+        />
+
+        <MissionCard 
+          title="Sandbox Mode"
+          description="Create your own mission manually"
+          icon={<Edit3 className="h-8 w-8" />}
+          missionType="sandbox"
         />
       </div>
     </div>
