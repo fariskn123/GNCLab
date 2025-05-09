@@ -43,6 +43,22 @@ const DroneScene = () => {
     setCurrentWaypointIndex(0);
   };
 
+  const handleRemoveWaypoint = (index: number) => {
+    if (droneStatus !== "idle" && droneStatus !== "complete") {
+      console.warn("Cannot remove waypoints during mission");
+      return;
+    }
+
+    // Do not allow removing the last waypoint
+    if (waypoints.length <= 1) {
+      return;
+    }
+
+    const updatedWaypoints = [...waypoints];
+    updatedWaypoints.splice(index, 1);
+    setWaypoints(updatedWaypoints);
+  };
+
   const isEditingDisabled = droneStatus !== "idle" && droneStatus !== "complete";
 
   return (
@@ -96,6 +112,7 @@ const DroneScene = () => {
         <WaypointForm 
           onAddWaypoint={handleAddWaypoint}
           onClearWaypoints={handleClearWaypoints}
+          onRemoveWaypoint={handleRemoveWaypoint}
           waypoints={waypoints}
           disabled={isEditingDisabled}
         />

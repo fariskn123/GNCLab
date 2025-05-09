@@ -3,13 +3,14 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, X } from "lucide-react";
 
 type WaypointCoordinates = [number, number, number];
 
 interface WaypointFormProps {
   onAddWaypoint: (coordinates: WaypointCoordinates) => void;
   onClearWaypoints: () => void;
+  onRemoveWaypoint?: (index: number) => void;
   waypoints: WaypointCoordinates[];
   disabled: boolean;
 }
@@ -17,6 +18,7 @@ interface WaypointFormProps {
 const WaypointForm: React.FC<WaypointFormProps> = ({
   onAddWaypoint,
   onClearWaypoints,
+  onRemoveWaypoint,
   waypoints,
   disabled,
 }) => {
@@ -97,6 +99,13 @@ const WaypointForm: React.FC<WaypointFormProps> = ({
         </Button>
       </div>
       
+      {/* Note about removing waypoints */}
+      {waypoints.length > 1 && !disabled && (
+        <p className="text-xs text-gray-400 mb-3 italic">
+          Remove waypoints before starting mission.
+        </p>
+      )}
+      
       {/* Waypoints list */}
       <div className="max-h-40 overflow-y-auto">
         <h4 className="font-medium mb-2">Waypoints:</h4>
@@ -105,14 +114,28 @@ const WaypointForm: React.FC<WaypointFormProps> = ({
         ) : (
           <ul className="space-y-1">
             {waypoints.map((waypoint, index) => (
-              <li key={index} className="text-sm flex items-center">
-                <span className={`w-3 h-3 rounded-full inline-block mr-2 ${
-                  index === 0 ? "bg-green-500" : 
-                  index === waypoints.length - 1 ? "bg-red-500" : 
-                  "bg-blue-500"
-                }`}></span>
-                <span className="font-medium">{index === 0 ? "Start" : index === waypoints.length - 1 ? "End" : `Waypoint ${index}`}:</span>
-                <span className="ml-1">X={waypoint[0]}, Y={waypoint[1]}, Z={waypoint[2]}</span>
+              <li key={index} className="text-sm flex items-center justify-between bg-gray-800/50 px-2 py-1 rounded">
+                <div className="flex items-center">
+                  <span className={`w-3 h-3 rounded-full inline-block mr-2 ${
+                    index === 0 ? "bg-green-500" : 
+                    index === waypoints.length - 1 ? "bg-red-500" : 
+                    "bg-blue-500"
+                  }`}></span>
+                  <span className="font-medium">{index === 0 ? "Start" : index === waypoints.length - 1 ? "End" : `Waypoint ${index}`}:</span>
+                  <span className="ml-1">X={waypoint[0]}, Y={waypoint[1]}, Z={waypoint[2]}</span>
+                </div>
+                
+                {/* Remove waypoint button */}
+                {onRemoveWaypoint && !disabled && (
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="h-6 w-6 p-0" 
+                    onClick={() => onRemoveWaypoint(index)}
+                  >
+                    <X size={14} />
+                  </Button>
+                )}
               </li>
             ))}
           </ul>
