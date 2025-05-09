@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, PerspectiveCamera, Environment, SoftShadows } from "@react-three/drei";
 import Drone from "./Drone";
@@ -7,6 +7,7 @@ import Ground from "./Ground";
 import Waypoints from "./Waypoints";
 import DroneControls, { DroneStatus } from "./DroneControls";
 import WaypointForm from "./WaypointForm";
+import { loadFlightData } from "@/utils/flightData";
 
 // Initial default waypoints
 const initialWaypoints: [number, number, number][] = [
@@ -18,8 +19,14 @@ const DroneScene = () => {
   const [waypoints, setWaypoints] = useState<[number, number, number][]>(initialWaypoints);
   const [currentWaypointIndex, setCurrentWaypointIndex] = useState<number>(0);
 
+  // Make waypoints accessible globally for the loadFlightData function
+  useEffect(() => {
+    window.waypointsData = waypoints;
+  }, [waypoints]);
+
   const handleStartMission = () => {
-    if (waypoints.length >= 2) {
+    const flightData = loadFlightData();
+    if (flightData.length >= 2) {
       setDroneStatus("flying");
       setCurrentWaypointIndex(0);
     } else {
@@ -34,7 +41,8 @@ const DroneScene = () => {
   };
 
   const handleAddWaypoint = (coordinates: [number, number, number]) => {
-    setWaypoints([...waypoints, coordinates]);
+    const newWaypoints = [...waypoints, coordinates];
+    setWaypoints(newWaypoints);
   };
 
   const handleClearWaypoints = () => {
@@ -75,13 +83,13 @@ const DroneScene = () => {
         <Drone 
           status={droneStatus} 
           onStatusChange={setDroneStatus} 
-          waypoints={waypoints}
+          waypoints={loadFlightData()}
           currentWaypointIndex={currentWaypointIndex}
           setCurrentWaypointIndex={setCurrentWaypointIndex}
         />
         <Ground />
         <Waypoints 
-          waypoints={waypoints} 
+          waypoints={loadFlightData()} 
           currentWaypointIndex={currentWaypointIndex}
           status={droneStatus}
         />
@@ -107,7 +115,7 @@ const DroneScene = () => {
         onReset={handleReset}
         status={droneStatus}
         currentWaypointIndex={currentWaypointIndex}
-        totalWaypoints={waypoints.length}
+        totalWaypoints={loadFlightData().length}
       />
     </div>
   );

@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Play, RefreshCw } from "lucide-react";
 import { Alert, AlertTitle } from "@/components/ui/alert";
+import { loadFlightData } from "@/utils/flightData";
 
 // Define the possible drone states
 export type DroneStatus = "idle" | "flying" | "returning" | "complete";
