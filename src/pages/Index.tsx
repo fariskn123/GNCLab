@@ -11,7 +11,7 @@ const Index = () => {
   
   return (
     <div className="w-full h-screen overflow-hidden relative">
-      <DroneScene />
+      <DroneScene missionType={missionType} />
       
       {/* Back button */}
       <div className="absolute top-4 left-4 z-10">
