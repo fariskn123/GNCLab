@@ -1,47 +1,22 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, PerspectiveCamera, Environment, SoftShadows } from "@react-three/drei";
-import { useSearchParams } from "react-router-dom";
 import Drone from "./Drone";
 import Ground from "./Ground";
 import Waypoints from "./Waypoints";
 import DroneControls, { DroneStatus } from "./DroneControls";
 import WaypointForm from "./WaypointForm";
-import MissionObstacles from "./MissionObstacles";
 
-// Initial default waypoints for sandbox mode
+// Initial default waypoints
 const initialWaypoints: [number, number, number][] = [
   [0, 1, 0]
 ];
 
-// Preset waypoints for construction site inspection mission
-const constructionMission: [number, number, number][] = [
-  [2, 2, 5],
-  [8, 2, 5],
-  [8, 8, 5],
-  [2, 8, 5],
-  [2, 2, 5]
-];
-
 const DroneScene = () => {
-  const [searchParams] = useSearchParams();
-  const missionType = searchParams.get('mission') || 'sandbox';
-  
   const [droneStatus, setDroneStatus] = useState<DroneStatus>("idle");
   const [waypoints, setWaypoints] = useState<[number, number, number][]>(initialWaypoints);
   const [currentWaypointIndex, setCurrentWaypointIndex] = useState<number>(0);
-
-  // Set mission-specific waypoints on initial load
-  useEffect(() => {
-    if (missionType === 'construction') {
-      setWaypoints(constructionMission);
-    } else {
-      setWaypoints(initialWaypoints);
-    }
-    setDroneStatus("idle");
-    setCurrentWaypointIndex(0);
-  }, [missionType]);
 
   const handleStartMission = () => {
     if (waypoints.length >= 2) {
@@ -63,12 +38,7 @@ const DroneScene = () => {
   };
 
   const handleClearWaypoints = () => {
-    // Reset to initial waypoint for the current mission type
-    if (missionType === 'construction') {
-      setWaypoints(constructionMission);
-    } else {
-      setWaypoints(initialWaypoints);
-    }
+    setWaypoints(initialWaypoints); // Reset to initial waypoint
     setDroneStatus("idle");
     setCurrentWaypointIndex(0);
   };
@@ -126,7 +96,6 @@ const DroneScene = () => {
           setCurrentWaypointIndex={setCurrentWaypointIndex}
         />
         <Ground />
-        <MissionObstacles />
         <Waypoints 
           waypoints={waypoints} 
           currentWaypointIndex={currentWaypointIndex}
