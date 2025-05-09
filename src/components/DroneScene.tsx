@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, PerspectiveCamera, Environment, SoftShadows } from "@react-three/drei";
@@ -59,6 +58,18 @@ const DroneScene = () => {
     setWaypoints(updatedWaypoints);
   };
 
+  // New function to update a waypoint at a specific index
+  const handleUpdateWaypoint = (index: number, coordinates: [number, number, number]) => {
+    if (droneStatus !== "idle" && droneStatus !== "complete") {
+      console.warn("Cannot update waypoints during mission");
+      return;
+    }
+
+    const updatedWaypoints = [...waypoints];
+    updatedWaypoints[index] = coordinates;
+    setWaypoints(updatedWaypoints);
+  };
+
   const isEditingDisabled = droneStatus !== "idle" && droneStatus !== "complete";
 
   return (
@@ -113,6 +124,7 @@ const DroneScene = () => {
           onAddWaypoint={handleAddWaypoint}
           onClearWaypoints={handleClearWaypoints}
           onRemoveWaypoint={handleRemoveWaypoint}
+          onUpdateWaypoint={handleUpdateWaypoint}
           waypoints={waypoints}
           disabled={isEditingDisabled}
         />
