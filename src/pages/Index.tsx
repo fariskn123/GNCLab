@@ -13,7 +13,7 @@ const Index = () => {
   const getMissionName = () => {
     switch(missionType) {
       case 'construction':
-        return "Construction Site Inspection (0-10 grid)";
+        return "Construction Site Inspection";
       default:
         return "Sandbox";
     }

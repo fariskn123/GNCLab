@@ -17,11 +17,11 @@ const initialWaypoints: [number, number, number][] = [
 
 // Mission-specific waypoints
 const constructionMission: [number, number, number][] = [
-  [1, 1, 5],  // start near origin
-  [9, 1, 5],
-  [9, 9, 5],
-  [1, 9, 5],
-  [1, 1, 5]
+  [2, 2, 5],  // start position
+  [8, 2, 5],  // right bottom
+  [8, 8, 5],  // right top
+  [2, 8, 5],  // left top
+  [2, 2, 5]   // back to start
 ];
 
 const DroneScene = () => {
