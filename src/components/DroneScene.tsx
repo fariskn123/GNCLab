@@ -7,9 +7,6 @@ import Ground from "./Ground";
 import Waypoints from "./Waypoints";
 import DroneControls, { DroneStatus } from "./DroneControls";
 import WaypointForm from "./WaypointForm";
-import MissionPresets from "./MissionPresets";
-import { missionPresets, MissionPreset } from "@/data/missionPresets";
-import Obstacles from "./Obstacles";
 
 // Initial default waypoints
 const initialWaypoints: [number, number, number][] = [
@@ -20,7 +17,6 @@ const DroneScene = () => {
   const [droneStatus, setDroneStatus] = useState<DroneStatus>("idle");
   const [waypoints, setWaypoints] = useState<[number, number, number][]>(initialWaypoints);
   const [currentWaypointIndex, setCurrentWaypointIndex] = useState<number>(0);
-  const [currentMission, setCurrentMission] = useState<MissionPreset | null>(null);
 
   const handleStartMission = () => {
     if (waypoints.length >= 2) {
@@ -45,7 +41,6 @@ const DroneScene = () => {
     setWaypoints(initialWaypoints); // Reset to initial waypoint
     setDroneStatus("idle");
     setCurrentWaypointIndex(0);
-    setCurrentMission(null);
   };
 
   const handleRemoveWaypoint = (index: number) => {
@@ -62,18 +57,6 @@ const DroneScene = () => {
     const updatedWaypoints = [...waypoints];
     updatedWaypoints.splice(index, 1);
     setWaypoints(updatedWaypoints);
-  };
-
-  const handleSelectMission = (mission: MissionPreset) => {
-    if (droneStatus !== "idle" && droneStatus !== "complete") {
-      console.warn("Cannot change mission during flight");
-      return;
-    }
-    
-    setWaypoints(mission.waypoints);
-    setCurrentMission(mission);
-    setDroneStatus("idle");
-    setCurrentWaypointIndex(0);
   };
 
   const isEditingDisabled = droneStatus !== "idle" && droneStatus !== "complete";
@@ -118,29 +101,21 @@ const DroneScene = () => {
           currentWaypointIndex={currentWaypointIndex}
           status={droneStatus}
         />
-        {currentMission && <Obstacles obstacles={currentMission.obstacles} />}
         
         {/* Environment */}
         <Environment preset="city" />
         <SoftShadows />
       </Canvas>
 
-      {/* Mission Presets and Waypoint Form - Positioned at the top */}
+      {/* Waypoint Form - Positioned at the top */}
       <div className="absolute top-6 left-6 max-w-md z-10">
-        <div className="bg-gray-900/80 backdrop-blur-sm p-4 rounded-lg text-white w-full">
-          <MissionPresets
-            presets={missionPresets}
-            onSelectMission={handleSelectMission}
-            disabled={isEditingDisabled}
-          />
-          <WaypointForm 
-            onAddWaypoint={handleAddWaypoint}
-            onClearWaypoints={handleClearWaypoints}
-            onRemoveWaypoint={handleRemoveWaypoint}
-            waypoints={waypoints}
-            disabled={isEditingDisabled}
-          />
-        </div>
+        <WaypointForm 
+          onAddWaypoint={handleAddWaypoint}
+          onClearWaypoints={handleClearWaypoints}
+          onRemoveWaypoint={handleRemoveWaypoint}
+          waypoints={waypoints}
+          disabled={isEditingDisabled}
+        />
       </div>
 
       {/* Overlay UI Controls - Positioned at the bottom */}
