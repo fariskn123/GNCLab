@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, PerspectiveCamera, Environment, SoftShadows } from "@react-three/drei";
 import Drone from "./Drone";
@@ -7,47 +7,6 @@ import Ground from "./Ground";
 import Waypoints from "./Waypoints";
 import DroneControls, { DroneStatus } from "./DroneControls";
 import WaypointForm from "./WaypointForm";
-import { useSearchParams } from "react-router-dom";
-
-// Preset mission waypoints
-const MISSION_WAYPOINTS = {
-  construction: [
-    [0, 1, 0],
-    [10, 1, 0],
-    [10, 1, 10],
-    [0, 1, 10],
-    [0, 1, 0]
-  ],
-  bridge: [
-    [0, 1, 0],
-    [5, 3, 0],
-    [10, 5, 0],
-    [15, 3, 0],
-    [20, 1, 0],
-    [15, -1, 0],
-    [10, -3, 0],
-    [5, -1, 0],
-    [0, 1, 0]
-  ],
-  warehouse: [
-    [0, 1, 0],
-    [0, 1, 10],
-    [2, 1, 10],
-    [2, 1, 0],
-    [4, 1, 0],
-    [4, 1, 10],
-    [6, 1, 10],
-    [6, 1, 0],
-    [8, 1, 0],
-    [8, 1, 10],
-    [10, 1, 10],
-    [10, 1, 0],
-    [0, 1, 0]
-  ],
-  sandbox: [
-    [0, 1, 0]
-  ]
-};
 
 // Initial default waypoints
 const initialWaypoints: [number, number, number][] = [
@@ -58,18 +17,6 @@ const DroneScene = () => {
   const [droneStatus, setDroneStatus] = useState<DroneStatus>("idle");
   const [waypoints, setWaypoints] = useState<[number, number, number][]>(initialWaypoints);
   const [currentWaypointIndex, setCurrentWaypointIndex] = useState<number>(0);
-  const [searchParams] = useSearchParams();
-  
-  // Get mission type from URL query parameters
-  const missionType = searchParams.get('mission') || 'sandbox';
-  
-  // Load mission waypoints on component mount or mission type change
-  useEffect(() => {
-    const missionWaypoints = MISSION_WAYPOINTS[missionType as keyof typeof MISSION_WAYPOINTS] || initialWaypoints;
-    setWaypoints(missionWaypoints);
-    setDroneStatus("idle");
-    setCurrentWaypointIndex(0);
-  }, [missionType]);
 
   const handleStartMission = () => {
     if (waypoints.length >= 2) {
