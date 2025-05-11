@@ -10,12 +10,12 @@ interface BridgeProps {
 const Bridge: React.FC<BridgeProps> = () => {
   // Bridge deck properties
   const deckPosition: [number, number, number] = [5, 5, 5];
-  const deckSize: [number, number, number] = [4, 2, 0.5];
-  const deckColor = "#555555";
+  const deckSize: [number, number, number] = [4, 2, 0.5]; // Width, depth, height (0.5m thick)
+  const deckColor = "#555555"; // Dark gray
   
   // Pillar properties
   const pillarSize: [number, number, number] = [1, 1, 5];
-  const pillarColor = "#333333";
+  const pillarColor = "#333333"; // Darker gray
   const pillar1Position: [number, number, number] = [3, 5, 2.5];
   const pillar2Position: [number, number, number] = [7, 5, 2.5];
 

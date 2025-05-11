@@ -23,9 +23,10 @@ const constructionMission: [number, number, number][] = [
 const bridgeMission: [number, number, number][] = [
   [2, 5, 2],
   [5, 5, 2],
-  [8, 5, 6],
-  [5, 5, 6],
-  [2, 5, 6]
+  [8, 5, 2],
+  [8, 5, 8],
+  [5, 5, 8],
+  [2, 5, 8]
 ];
 
 // Initial default waypoints
