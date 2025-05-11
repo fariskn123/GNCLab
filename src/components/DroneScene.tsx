@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, PerspectiveCamera, Environment, SoftShadows } from "@react-three/drei";
@@ -27,14 +28,25 @@ const bridgeMission: [number, number, number][] = [
   [1, 5, 8]
 ];
 
+// Construction mission waypoints - will only be used when missionMode === 'construction'
+const constructionMission: [number, number, number][] = [
+  [2, 2, 6],
+  [8, 2, 6],
+  [8, 8, 6],
+  [2, 8, 6],
+  [2, 2, 6]
+];
+
 const DroneScene = () => {
   // Choose appropriate initial waypoints based on mission mode
   const getInitialWaypoints = () => {
     if (missionMode === 'bridge') {
       return bridgeMission;
     }
+    if (missionMode === 'construction') {
+      return constructionMission;
+    }
     // Add other mission waypoints here when needed
-    // if (missionMode === 'construction') { ... }
     // if (missionMode === 'warehouse') { ... }
     
     // Default to sandbox mode
@@ -150,11 +162,14 @@ const DroneScene = () => {
           </group>
         )}
         
-        {/* Construction site would go here */}
+        {/* Construction site visualization */}
         {missionMode === 'construction' && (
-          // Construction site visualization would go here when implemented
           <group>
-            {/* Construction site elements would go here */}
+            {/* Building - 4x4x5 cube centered at (5,5,2.5) */}
+            <mesh position={[5, 5, 2.5]} castShadow receiveShadow>
+              <boxGeometry args={[4, 4, 5]} />
+              <meshStandardMaterial color="#8A898C" /> {/* Medium gray color */}
+            </mesh>
           </group>
         )}
         
