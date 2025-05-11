@@ -26,7 +26,8 @@ const Index = () => {
       {/* Mission indicator */}
       <div className="absolute top-4 right-4 z-10">
         <div className="px-3 py-1.5 bg-black/50 text-white rounded-md border border-gray-700">
-          Mission: {missionType.charAt(0).toUpperCase() + missionType.slice(1)}
+          Mission: {missionType === 'bridge' ? 'Bridge Flythrough' : 
+                    missionType.charAt(0).toUpperCase() + missionType.slice(1)}
         </div>
       </div>
     </div>
