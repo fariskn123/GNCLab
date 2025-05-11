@@ -9,6 +9,8 @@ const Bridge = () => {
       <Box 
         args={[4, 2, 0.5]} // width, depth, height
         position={[5, 5, 5]} // centered at x:5, y:5, z:5
+        castShadow
+        receiveShadow
       >
         <meshStandardMaterial color="#333333" />
       </Box>
@@ -17,6 +19,8 @@ const Bridge = () => {
       <Box
         args={[1, 1, 5]} // width, depth, height
         position={[3, 5, 2.5]} // left pillar
+        castShadow
+        receiveShadow
       >
         <meshStandardMaterial color="#403E43" />
       </Box>
@@ -24,6 +28,8 @@ const Bridge = () => {
       <Box
         args={[1, 1, 5]} // width, depth, height
         position={[7, 5, 2.5]} // right pillar
+        castShadow
+        receiveShadow
       >
         <meshStandardMaterial color="#403E43" />
       </Box>
@@ -32,6 +38,7 @@ const Bridge = () => {
       <Box
         args={[10, 10, 0.1]} // width, depth, minimal height
         position={[5, 5, 0.05]} // just above the ground
+        receiveShadow
       >
         <meshStandardMaterial color="#4d80b3" transparent opacity={0.7} />
       </Box>
