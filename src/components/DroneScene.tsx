@@ -8,7 +8,6 @@ import Waypoints from "./Waypoints";
 import DroneControls, { DroneStatus } from "./DroneControls";
 import WaypointForm from "./WaypointForm";
 import Building from "./Building";
-import Bridge from "./Bridge";
 import { useSearchParams } from "react-router-dom";
 
 // Construction mission waypoints - forming a square loop around the building at Z=6
@@ -18,16 +17,6 @@ const constructionMission: [number, number, number][] = [
   [8, 8, 6],
   [2, 8, 6],
   [2, 2, 6]
-];
-
-// Bridge mission waypoints - going under and then over the bridge
-const bridgeMission: [number, number, number][] = [
-  [2, 5, 2],
-  [5, 5, 2],
-  [8, 5, 2],
-  [8, 5, 8],
-  [5, 5, 8],
-  [2, 5, 8]
 ];
 
 // Initial default waypoints
@@ -40,7 +29,6 @@ const DroneScene = () => {
   const [waypoints, setWaypoints] = useState<[number, number, number][]>(initialWaypoints);
   const [currentWaypointIndex, setCurrentWaypointIndex] = useState<number>(0);
   const [showBuilding, setShowBuilding] = useState(false);
-  const [showBridge, setShowBridge] = useState(false);
   
   // Get mission type from URL query parameters
   const [searchParams] = useSearchParams();
@@ -51,15 +39,9 @@ const DroneScene = () => {
     if (missionType === 'construction') {
       setWaypoints(constructionMission);
       setShowBuilding(true);
-      setShowBridge(false);
-    } else if (missionType === 'bridge') {
-      setWaypoints(bridgeMission);
-      setShowBridge(true);
-      setShowBuilding(false);
     } else {
       setWaypoints(initialWaypoints);
       setShowBuilding(false);
-      setShowBridge(false);
     }
   }, [missionType]);
 
@@ -80,8 +62,6 @@ const DroneScene = () => {
     // Reset to appropriate waypoints based on mission type
     if (missionType === 'construction') {
       setWaypoints(constructionMission);
-    } else if (missionType === 'bridge') {
-      setWaypoints(bridgeMission);
     } else {
       setWaypoints(initialWaypoints);
     }
@@ -96,7 +76,6 @@ const DroneScene = () => {
     setDroneStatus("idle");
     setCurrentWaypointIndex(0);
     setShowBuilding(false);
-    setShowBridge(false);
   };
 
   const handleRemoveWaypoint = (index: number) => {
@@ -165,7 +144,6 @@ const DroneScene = () => {
         />
         <Ground />
         {showBuilding && <Building />}
-        {showBridge && <Bridge />}
         <Waypoints 
           waypoints={waypoints} 
           currentWaypointIndex={currentWaypointIndex}
