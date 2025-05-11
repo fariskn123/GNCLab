@@ -1,4 +1,5 @@
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, PerspectiveCamera, Environment, SoftShadows } from "@react-three/drei";
 import Drone from "./Drone";
@@ -6,6 +7,17 @@ import Ground from "./Ground";
 import Waypoints from "./Waypoints";
 import DroneControls, { DroneStatus } from "./DroneControls";
 import WaypointForm from "./WaypointForm";
+import Building from "./Building";
+import { useSearchParams } from "react-router-dom";
+
+// Construction mission waypoints - forming a square loop around the building at Z=6
+const constructionMission: [number, number, number][] = [
+  [2, 2, 6],
+  [8, 2, 6],
+  [8, 8, 6],
+  [2, 8, 6],
+  [2, 2, 6]
+];
 
 // Initial default waypoints
 const initialWaypoints: [number, number, number][] = [
@@ -16,6 +28,22 @@ const DroneScene = () => {
   const [droneStatus, setDroneStatus] = useState<DroneStatus>("idle");
   const [waypoints, setWaypoints] = useState<[number, number, number][]>(initialWaypoints);
   const [currentWaypointIndex, setCurrentWaypointIndex] = useState<number>(0);
+  const [showBuilding, setShowBuilding] = useState(false);
+  
+  // Get mission type from URL query parameters
+  const [searchParams] = useSearchParams();
+  const missionType = searchParams.get('mission') || 'sandbox';
+
+  // Set waypoints based on mission type
+  useEffect(() => {
+    if (missionType === 'construction') {
+      setWaypoints(constructionMission);
+      setShowBuilding(true);
+    } else {
+      setWaypoints(initialWaypoints);
+      setShowBuilding(false);
+    }
+  }, [missionType]);
 
   const handleStartMission = () => {
     if (waypoints.length >= 2) {
@@ -30,6 +58,13 @@ const DroneScene = () => {
   const handleReset = () => {
     setDroneStatus("idle");
     setCurrentWaypointIndex(0);
+    
+    // Reset to appropriate waypoints based on mission type
+    if (missionType === 'construction') {
+      setWaypoints(constructionMission);
+    } else {
+      setWaypoints(initialWaypoints);
+    }
   };
 
   const handleAddWaypoint = (coordinates: [number, number, number]) => {
@@ -40,6 +75,7 @@ const DroneScene = () => {
     setWaypoints(initialWaypoints); // Reset to initial waypoint
     setDroneStatus("idle");
     setCurrentWaypointIndex(0);
+    setShowBuilding(false);
   };
 
   const handleRemoveWaypoint = (index: number) => {
@@ -58,7 +94,7 @@ const DroneScene = () => {
     setWaypoints(updatedWaypoints);
   };
 
-  // New function to update a waypoint at a specific index
+  // Function to update a waypoint at a specific index
   const handleUpdateWaypoint = (index: number, coordinates: [number, number, number]) => {
     if (droneStatus !== "idle" && droneStatus !== "complete") {
       console.warn("Cannot update waypoints during mission");
@@ -76,7 +112,7 @@ const DroneScene = () => {
     <div className="w-full h-screen bg-gray-900 relative">
       <Canvas shadows>
         {/* Camera */}
-        <PerspectiveCamera makeDefault position={[5, 5, 5]} fov={50} />
+        <PerspectiveCamera makeDefault position={[5, 5, 10]} fov={50} />
         <OrbitControls 
           enableDamping 
           dampingFactor={0.05}
@@ -107,6 +143,7 @@ const DroneScene = () => {
           setCurrentWaypointIndex={setCurrentWaypointIndex}
         />
         <Ground />
+        {showBuilding && <Building />}
         <Waypoints 
           waypoints={waypoints} 
           currentWaypointIndex={currentWaypointIndex}
