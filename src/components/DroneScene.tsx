@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, PerspectiveCamera, Environment, SoftShadows } from "@react-three/drei";
@@ -6,7 +5,7 @@ import Drone from "./Drone";
 import Ground from "./Ground";
 import Waypoints from "./Waypoints";
 import DroneControls, { DroneStatus } from "./DroneControls";
-import WaypointForm from "./WaypointForm";
+import WaypointForm from "./waypoint/WaypointForm";
 
 // Mission mode constant - set this to load different missions
 const missionMode = null; // 'construction', 'bridge', 'warehouse', or null
