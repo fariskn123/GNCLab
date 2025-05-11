@@ -2,27 +2,16 @@
 import { Link, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Home as HomeIcon } from "lucide-react";
-import DroneScene, { MissionMode } from "@/components/DroneScene";
+import DroneScene from "@/components/DroneScene";
 
 const Index = () => {
   // Get mission type from URL query parameters
   const [searchParams] = useSearchParams();
   const missionType = searchParams.get('mission') || 'sandbox';
   
-  // Convert to MissionMode type
-  const getMissionMode = (type: string): MissionMode => {
-    if (type === 'construction' || type === 'bridge' || type === 'warehouse') {
-      return type;
-    }
-    // Default to null (sandbox mode) for any other value
-    return null;
-  };
-  
-  const missionMode = getMissionMode(missionType);
-  
   return (
     <div className="w-full h-screen overflow-hidden relative">
-      <DroneScene missionMode={missionMode} />
+      <DroneScene />
       
       {/* Back button */}
       <div className="absolute top-4 left-4 z-10">

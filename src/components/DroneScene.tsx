@@ -6,55 +6,15 @@ import Ground from "./Ground";
 import Waypoints from "./Waypoints";
 import DroneControls, { DroneStatus } from "./DroneControls";
 import WaypointForm from "./WaypointForm";
-import Bridge from "./Bridge";
-
-// Define mission types
-export type MissionMode = "construction" | "bridge" | "warehouse" | null;
 
 // Initial default waypoints
 const initialWaypoints: [number, number, number][] = [
   [0, 1, 0]
 ];
 
-// Mission-specific waypoints could be defined here or imported from a separate file
-const constructionWaypoints: [number, number, number][] = [
-  [0, 1, 0],
-  [5, 3, 0],
-  [10, 5, 0],
-  [10, 5, 5],
-  [5, 3, 5],
-  [0, 1, 5]
-];
-
-const bridgeWaypoints: [number, number, number][] = [
-  [1, 5, 2],
-  [4, 5, 2],
-  [6, 5, 2],
-  [9, 5, 2],
-  [9, 5, 8],
-  [6, 5, 8],
-  [4, 5, 8],
-  [1, 5, 8]
-];
-
-const warehouseWaypoints: [number, number, number][] = [
-  [0, 3, 0],
-  [5, 3, 0],
-  [10, 3, 0],
-  [10, 3, 5],
-  [5, 3, 5],
-  [0, 3, 5],
-];
-
-const DroneScene = ({ missionMode = null }: { missionMode?: MissionMode }) => {
+const DroneScene = () => {
   const [droneStatus, setDroneStatus] = useState<DroneStatus>("idle");
-  const [waypoints, setWaypoints] = useState<[number, number, number][]>(() => {
-    // Initialize waypoints based on mission mode
-    if (missionMode === "construction") return constructionWaypoints;
-    if (missionMode === "bridge") return bridgeWaypoints;
-    if (missionMode === "warehouse") return warehouseWaypoints;
-    return initialWaypoints;
-  });
+  const [waypoints, setWaypoints] = useState<[number, number, number][]>(initialWaypoints);
   const [currentWaypointIndex, setCurrentWaypointIndex] = useState<number>(0);
 
   const handleStartMission = () => {
@@ -70,17 +30,6 @@ const DroneScene = ({ missionMode = null }: { missionMode?: MissionMode }) => {
   const handleReset = () => {
     setDroneStatus("idle");
     setCurrentWaypointIndex(0);
-    
-    // Reset waypoints based on mission mode
-    if (missionMode === "construction") {
-      setWaypoints(constructionWaypoints);
-    } else if (missionMode === "bridge") {
-      setWaypoints(bridgeWaypoints);
-    } else if (missionMode === "warehouse") {
-      setWaypoints(warehouseWaypoints);
-    } else {
-      setWaypoints(initialWaypoints);
-    }
   };
 
   const handleAddWaypoint = (coordinates: [number, number, number]) => {
@@ -158,10 +107,6 @@ const DroneScene = ({ missionMode = null }: { missionMode?: MissionMode }) => {
           setCurrentWaypointIndex={setCurrentWaypointIndex}
         />
         <Ground />
-
-        {/* Only render mission-specific objects if a mission is selected */}
-        {missionMode === "bridge" && <Bridge />}
-        
         <Waypoints 
           waypoints={waypoints} 
           currentWaypointIndex={currentWaypointIndex}
@@ -194,42 +139,6 @@ const DroneScene = ({ missionMode = null }: { missionMode?: MissionMode }) => {
         totalWaypoints={waypoints.length}
       />
     </div>
-  );
-};
-
-// Bridge component for the bridge mission
-const Bridge = () => {
-  return (
-    <>
-      {/* Bridge deck */}
-      <mesh 
-        position={[5, 5, 5]} 
-        castShadow 
-        receiveShadow
-      >
-        <boxGeometry args={[4, 2, 0.5]} />
-        <meshStandardMaterial color="#222222" />
-      </mesh>
-      
-      {/* Pillars */}
-      <mesh 
-        position={[3, 5, 2.5]} 
-        castShadow 
-        receiveShadow
-      >
-        <boxGeometry args={[1, 1, 5]} />
-        <meshStandardMaterial color="#8A898C" />
-      </mesh>
-      
-      <mesh 
-        position={[7, 5, 2.5]} 
-        castShadow 
-        receiveShadow
-      >
-        <boxGeometry args={[1, 1, 5]} />
-        <meshStandardMaterial color="#8A898C" />
-      </mesh>
-    </>
   );
 };
 
