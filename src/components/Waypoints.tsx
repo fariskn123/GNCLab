@@ -1,8 +1,7 @@
 
 import { Line } from "@react-three/drei";
 import { Vector3 } from "three";
-import { DroneStatus } from "@/context/DroneContext";
-import { memo } from "react";
+import { DroneStatus } from "./DroneControls";
 
 interface WaypointsProps {
   waypoints: [number, number, number][];
@@ -71,4 +70,4 @@ const Waypoints = ({ waypoints, currentWaypointIndex = 0, status = "idle" }: Way
   );
 };
 
-export default memo(Waypoints);
+export default Waypoints;

@@ -3,7 +3,7 @@ import { useRef, useEffect } from "react";
 import { Group } from "three";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
-import { DroneStatus } from "@/context/DroneContext";
+import { DroneStatus } from "./DroneControls";
 
 interface DroneProps {
   status: DroneStatus;
