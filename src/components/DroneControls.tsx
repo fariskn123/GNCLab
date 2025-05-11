@@ -1,11 +1,9 @@
 
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Play, RefreshCw } from "lucide-react";
 import { Alert, AlertTitle } from "@/components/ui/alert";
-
-// Define the possible drone states
-export type DroneStatus = "idle" | "flying" | "returning" | "complete";
+import { DroneStatus } from "@/context/DroneContext";
+import { memo } from "react";
 
 interface DroneControlsProps {
   onStart: () => void;
@@ -73,4 +71,4 @@ const DroneControls = ({
   );
 };
 
-export default DroneControls;
+export default memo(DroneControls);
