@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import DroneControls, { DroneStatus } from "./DroneControls";
@@ -7,7 +6,7 @@ import ThreeScene from "./ThreeScene";
 import { MissionType, getWaypointsForMission } from "./missions/missionData";
 
 // Mission mode constant - set this to load different missions
-const missionMode: MissionType = null; // 'construction', 'bridge', 'warehouse', or null
+const missionMode: MissionType = 'construction'; // Changed from null to 'construction'
 
 const DroneScene = () => {
   const [droneStatus, setDroneStatus] = useState<DroneStatus>("idle");
