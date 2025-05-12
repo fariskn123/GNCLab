@@ -5,12 +5,20 @@ import WaypointForm from "./waypoint/WaypointForm";
 import ThreeScene from "./ThreeScene";
 import { MissionType, getWaypointsForMission } from "./missions/missionData";
 
-// Mission mode constant - set this to load different missions
-const missionMode: MissionType = 'bridge'; // Set to 'bridge' to enable the Bridge Over Waterway mission
+interface DroneSceneProps {
+  missionMode?: string;
+}
 
-const DroneScene = () => {
+const DroneScene = ({ missionMode = 'sandbox' }: DroneSceneProps) => {
+  // Convert the string mission mode to our MissionType
+  const validMissionMode = (
+    missionMode === 'bridge' || 
+    missionMode === 'construction' || 
+    missionMode === 'warehouse'
+  ) ? missionMode as MissionType : null;
+  
   const [droneStatus, setDroneStatus] = useState<DroneStatus>("idle");
-  const [waypoints, setWaypoints] = useState<[number, number, number][]>(getWaypointsForMission(missionMode));
+  const [waypoints, setWaypoints] = useState<[number, number, number][]>(getWaypointsForMission(validMissionMode));
   const [currentWaypointIndex, setCurrentWaypointIndex] = useState<number>(0);
 
   const handleStartMission = () => {
@@ -27,7 +35,7 @@ const DroneScene = () => {
     setDroneStatus("idle");
     setCurrentWaypointIndex(0);
     // Reset waypoints to initial state based on current mission mode
-    setWaypoints(getWaypointsForMission(missionMode));
+    setWaypoints(getWaypointsForMission(validMissionMode));
   };
 
   const handleAddWaypoint = (coordinates: [number, number, number]) => {
@@ -78,7 +86,7 @@ const DroneScene = () => {
           currentWaypointIndex={currentWaypointIndex}
           setCurrentWaypointIndex={setCurrentWaypointIndex}
           setDroneStatus={setDroneStatus}
-          missionMode={missionMode}
+          missionMode={validMissionMode}
         />
       </Canvas>
 

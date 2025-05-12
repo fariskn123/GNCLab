@@ -1,15 +1,26 @@
 
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Home as HomeIcon } from "lucide-react";
 import DroneScene from "@/components/DroneScene";
 
+// Mission type to display name mapping
+const missionDisplayNames: Record<string, string> = {
+  'bridge': 'Bridge Over Waterway',
+  'construction': 'Construction Site Inspection',
+  'warehouse': 'Warehouse Roof Scan',
+  'sandbox': 'Sandbox Mode'
+};
+
 const Index = () => {
-  // We're using the constant in DroneScene.tsx now, not URL parameters
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const missionParam = queryParams.get('mission') || 'sandbox';
+  const missionName = missionDisplayNames[missionParam] || 'Sandbox Mode';
   
   return (
     <div className="w-full h-screen overflow-hidden relative">
-      <DroneScene />
+      <DroneScene missionMode={missionParam} />
       
       {/* Back button */}
       <div className="absolute top-4 left-4 z-10">
@@ -21,10 +32,10 @@ const Index = () => {
         </Button>
       </div>
       
-      {/* Mission indicator - based on constant value in DroneScene.tsx */}
+      {/* Mission indicator - based on URL parameter */}
       <div className="absolute top-4 right-4 z-10">
         <div className="px-3 py-1.5 bg-black/50 text-white rounded-md border border-gray-700">
-          Mission: Bridge Over Waterway
+          Mission: {missionName}
         </div>
       </div>
     </div>
