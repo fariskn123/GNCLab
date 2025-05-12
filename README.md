@@ -33,6 +33,8 @@
 ```ts
 const missionMode: MissionType = 'construction';
 // Options: 'construction' | 'bridge' | 'warehouse' | null (sandbox)
+```
+
 
 ## **GNCLab Architecture Overview**
 1. Application Structure
