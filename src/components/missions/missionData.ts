@@ -8,14 +8,14 @@ export const initialWaypoints: WaypointCoordinates[] = [
 
 // Bridge mission waypoints
 export const bridgeMission: WaypointCoordinates[] = [
-  [1, 5, 2],  // approach under bridge
+  [1, 5, 2],
   [4, 5, 2],
   [6, 5, 2],
-  [9, 5, 2],  // exit under
-  [9, 5, 8],  // climb
+  [9, 5, 2],
+  [9, 5, 8],
   [6, 5, 8],
   [4, 5, 8],
-  [1, 5, 8]   // return over
+  [1, 5, 8]
 ];
 
 // Construction mission waypoints
