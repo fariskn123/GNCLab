@@ -178,6 +178,7 @@ const DroneScene = ({ missionMode = 'sandbox' }: DroneSceneProps) => {
         totalWaypoints={waypoints.length}
         hasCustomWaypoints={usingCustomWaypoints}
         canSave={validMissionMode !== null}
+        isSandboxMode={validMissionMode === null}
       />
     </div>
   );
