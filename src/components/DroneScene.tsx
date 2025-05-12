@@ -6,7 +6,7 @@ import ThreeScene from "./ThreeScene";
 import { MissionType, getWaypointsForMission } from "./missions/missionData";
 
 // Mission mode constant - set this to load different missions
-const missionMode: MissionType = 'construction'; // Changed from null to 'construction'
+const missionMode: MissionType = 'bridge'; // Changed from 'construction' to 'bridge'
 
 const DroneScene = () => {
   const [droneStatus, setDroneStatus] = useState<DroneStatus>("idle");
