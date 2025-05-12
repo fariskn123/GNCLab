@@ -41,10 +41,14 @@ const MissionObjects: React.FC<MissionObjectsProps> = ({ missionMode }) => {
         </group>
       )}
       
-      {/* Warehouse would go here */}
+      {/* Warehouse visualization */}
       {missionMode === 'warehouse' && (
         <group>
-          {/* Warehouse elements would go here */}
+          {/* Warehouse building - 6x6x3 cube centered at (5,5,1.5) */}
+          <mesh position={[5, 5, 1.5]} castShadow receiveShadow>
+            <boxGeometry args={[6, 6, 3]} /> {/* 6x6m footprint, 3m tall */}
+            <meshStandardMaterial color="#9F9EA1" /> {/* Light gray color for the warehouse */}
+          </mesh>
         </group>
       )}
     </>
