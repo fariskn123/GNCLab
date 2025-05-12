@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Play, RefreshCw } from "lucide-react";
+import { Play, RefreshCw, Save, Check } from "lucide-react";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 
 // Define the possible drone states
@@ -10,17 +10,23 @@ export type DroneStatus = "idle" | "flying" | "returning" | "complete";
 interface DroneControlsProps {
   onStart: () => void;
   onReset: () => void;
+  onSave: () => void;
   status: DroneStatus;
   currentWaypointIndex: number;
   totalWaypoints: number;
+  hasCustomWaypoints?: boolean;
+  canSave?: boolean;
 }
 
 const DroneControls = ({ 
   onStart, 
-  onReset, 
+  onReset,
+  onSave,
   status, 
   currentWaypointIndex,
-  totalWaypoints 
+  totalWaypoints,
+  hasCustomWaypoints = false,
+  canSave = true
 }: DroneControlsProps) => {
   // Map status to display text
   const getStatusText = (): string => {
@@ -47,6 +53,14 @@ const DroneControls = ({
       <div className="flex items-center gap-3">
         <div className={`h-3 w-3 rounded-full ${statusColor[status]}`}></div>
         <span className="text-white font-medium">Status: {getStatusText()}</span>
+        
+        {/* Custom waypoints indicator */}
+        {hasCustomWaypoints && canSave && (
+          <div className="flex items-center gap-1 ml-3 bg-blue-500/20 px-2 py-0.5 rounded text-xs text-blue-300">
+            <Check size={12} />
+            <span>Custom Waypoints</span>
+          </div>
+        )}
       </div>
       
       {/* Control buttons */}
@@ -59,10 +73,23 @@ const DroneControls = ({
           <Play size={16} />
           Start Mission
         </Button>
+
+        {canSave && (
+          <Button 
+            onClick={onSave}
+            variant="secondary"
+            disabled={status !== "idle" && status !== "complete"}
+            className="flex items-center gap-2"
+          >
+            <Save size={16} />
+            Save Waypoints
+          </Button>
+        )}
+
         <Button 
           onClick={onReset}
           variant="outline"
-          disabled={status === "idle"}
+          disabled={status === "idle" && !hasCustomWaypoints}
           className="flex items-center gap-2"
         >
           <RefreshCw size={16} />

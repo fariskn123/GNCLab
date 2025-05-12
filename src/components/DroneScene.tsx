@@ -1,9 +1,11 @@
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { Canvas } from "@react-three/fiber";
 import DroneControls, { DroneStatus } from "./DroneControls";
 import WaypointForm from "./waypoint/WaypointForm";
 import ThreeScene from "./ThreeScene";
 import { MissionType, getWaypointsForMission } from "./missions/missionData";
+import { toast } from "./ui/use-toast";
 
 interface DroneSceneProps {
   missionMode?: string;
@@ -18,8 +20,56 @@ const DroneScene = ({ missionMode = 'sandbox' }: DroneSceneProps) => {
   ) ? missionMode as MissionType : null;
   
   const [droneStatus, setDroneStatus] = useState<DroneStatus>("idle");
-  const [waypoints, setWaypoints] = useState<[number, number, number][]>(getWaypointsForMission(validMissionMode));
+  const [waypoints, setWaypoints] = useState<[number, number, number][]>([]);
   const [currentWaypointIndex, setCurrentWaypointIndex] = useState<number>(0);
+  const [usingCustomWaypoints, setUsingCustomWaypoints] = useState<boolean>(false);
+
+  // Load waypoints based on mission type and check localStorage for saved waypoints
+  useEffect(() => {
+    loadWaypointsForMission(validMissionMode);
+  }, [validMissionMode]);
+
+  const loadWaypointsForMission = (missionType: MissionType) => {
+    if (!missionType || missionType === null) {
+      // In sandbox mode, just load default initial waypoint
+      setWaypoints(getWaypointsForMission(null));
+      setUsingCustomWaypoints(false);
+      return;
+    }
+
+    // Check if we have saved waypoints for this mission
+    const savedWaypointsKey = `waypoints_${missionType}`;
+    const savedWaypoints = localStorage.getItem(savedWaypointsKey);
+    
+    if (savedWaypoints) {
+      try {
+        const parsedWaypoints = JSON.parse(savedWaypoints);
+        setWaypoints(parsedWaypoints);
+        setUsingCustomWaypoints(true);
+      } catch (error) {
+        console.error("Failed to load saved waypoints:", error);
+        setWaypoints(getWaypointsForMission(missionType));
+        setUsingCustomWaypoints(false);
+      }
+    } else {
+      // No saved waypoints, use default ones
+      setWaypoints(getWaypointsForMission(missionType));
+      setUsingCustomWaypoints(false);
+    }
+  };
+
+  const saveWaypointsToStorage = () => {
+    if (validMissionMode) {
+      const savedWaypointsKey = `waypoints_${validMissionMode}`;
+      localStorage.setItem(savedWaypointsKey, JSON.stringify(waypoints));
+      setUsingCustomWaypoints(true);
+      toast({
+        title: "Waypoints Saved",
+        description: `Custom waypoints saved for ${validMissionMode} mission.`,
+        duration: 3000
+      });
+    }
+  };
 
   const handleStartMission = () => {
     if (waypoints.length >= 2) {
@@ -35,17 +85,33 @@ const DroneScene = ({ missionMode = 'sandbox' }: DroneSceneProps) => {
     setDroneStatus("idle");
     setCurrentWaypointIndex(0);
     // Reset waypoints to initial state based on current mission mode
-    setWaypoints(getWaypointsForMission(validMissionMode));
+    loadWaypointsForMission(validMissionMode);
+  };
+
+  const handleSave = () => {
+    saveWaypointsToStorage();
   };
 
   const handleAddWaypoint = (coordinates: [number, number, number]) => {
-    setWaypoints([...waypoints, coordinates]);
+    const updatedWaypoints = [...waypoints, coordinates];
+    setWaypoints(updatedWaypoints);
   };
 
   const handleClearWaypoints = () => {
     setWaypoints(getWaypointsForMission(null)); // Reset to initial waypoint
     setDroneStatus("idle");
     setCurrentWaypointIndex(0);
+    
+    // Remove saved waypoints for this mission if we're not in sandbox mode
+    if (validMissionMode) {
+      localStorage.removeItem(`waypoints_${validMissionMode}`);
+      setUsingCustomWaypoints(false);
+      toast({
+        title: "Waypoints Cleared",
+        description: `Custom waypoints removed for ${validMissionMode} mission.`,
+        duration: 3000
+      });
+    }
   };
 
   const handleRemoveWaypoint = (index: number) => {
@@ -106,9 +172,12 @@ const DroneScene = ({ missionMode = 'sandbox' }: DroneSceneProps) => {
       <DroneControls 
         onStart={handleStartMission} 
         onReset={handleReset}
+        onSave={handleSave}
         status={droneStatus}
         currentWaypointIndex={currentWaypointIndex}
         totalWaypoints={waypoints.length}
+        hasCustomWaypoints={usingCustomWaypoints}
+        canSave={validMissionMode !== null}
       />
     </div>
   );
